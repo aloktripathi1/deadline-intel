@@ -39,11 +39,11 @@ const mlpItems: DeadlineItem[] = [
   { id: 'mlp-oppe1', title: 'OPPE 1', subject: 'MLP', type: 'oppe', date: '2026-04-04', priority: 1 },
   { id: 'mlp-oppe2', title: 'OPPE 2', subject: 'MLP', type: 'oppe', date: '2026-04-26', priority: 1 },
   // Project Milestones
-  { id: 'mlp-m1', title: 'Project M1 — EDA & Baseline', subject: 'MLP', type: 'milestone', date: '2026-02-15', priority: 3, description: 'Data loading, EDA, train-val split, preprocessing, baseline model' },
-  { id: 'mlp-m2', title: 'Project M2 — Linear Models & SGD', subject: 'MLP', type: 'milestone', date: '2026-02-22', priority: 3, description: 'Linear models, SGD, hyperparameter tuning' },
-  { id: 'mlp-m3', title: 'Project M3 — Dim Reduction & Classical ML', subject: 'MLP', type: 'milestone', date: '2026-03-01', priority: 3, description: 'Feature selection, Naive Bayes, KNN, SVM' },
-  { id: 'mlp-m4', title: 'Project M4 — Ensemble & MLP', subject: 'MLP', type: 'milestone', date: '2026-03-08', priority: 3, description: 'Bagging, Boosting, Stacking, Multi-layer Perceptron' },
-  { id: 'mlp-m5', title: 'Project M5 — Final Submission', subject: 'MLP', type: 'milestone', date: '2026-03-15', priority: 2, description: 'Repeat ML pipeline with insights, last submission' },
+  { id: 'mlp-m1', title: 'Project Milestone 1 — EDA & Baseline', subject: 'MLP', type: 'milestone', date: '2026-02-15', priority: 3, description: 'Data loading, EDA, train-val split, preprocessing, baseline model' },
+  { id: 'mlp-m2', title: 'Project Milestone 2 — Linear Models & SGD', subject: 'MLP', type: 'milestone', date: '2026-02-22', priority: 3, description: 'Linear models, SGD, hyperparameter tuning' },
+  { id: 'mlp-m3', title: 'Project Milestone 3 — Dim Reduction & Classical ML', subject: 'MLP', type: 'milestone', date: '2026-03-01', priority: 3, description: 'Feature selection, Naive Bayes, KNN, SVM' },
+  { id: 'mlp-m4', title: 'Project Milestone 4 — Ensemble & MLP', subject: 'MLP', type: 'milestone', date: '2026-03-08', priority: 3, description: 'Bagging, Boosting, Stacking, Multi-layer Perceptron' },
+  { id: 'mlp-m5', title: 'Project Milestone 5 — Final Submission', subject: 'MLP', type: 'milestone', date: '2026-03-15', priority: 2, description: 'Repeat ML pipeline with insights, last submission' },
   // Kaggle
   { id: 'mlp-ka1', title: 'KA1 Submission', subject: 'MLP', type: 'kaggle', date: '2026-03-18', priority: 4 },
   { id: 'mlp-ka1-review', title: 'KA1 Peer Review', subject: 'MLP', type: 'kaggle_review', date: '2026-03-22', priority: 4 },
@@ -59,11 +59,11 @@ const dlGenaiItems: DeadlineItem[] = [
   { id: 'dlg-form3', title: 'Deployment Link', subject: 'DL_GENAI', type: 'form', date: '2026-03-12', priority: 3 },
   { id: 'dlg-form2', title: 'Report Submission', subject: 'DL_GENAI', type: 'form', date: '2026-03-30', priority: 3 },
   // Milestones
-  { id: 'dlg-m1', title: 'M1 — EDA & Baseline', subject: 'DL_GENAI', type: 'milestone', date: '2026-02-18', priority: 3, description: 'EDA, rule-based baseline, Kaggle submission' },
-  { id: 'dlg-m2', title: 'M2 — Classical ML', subject: 'DL_GENAI', type: 'milestone', date: '2026-02-25', priority: 3, description: 'Text preprocessing, BoW/TF-IDF, classical models' },
-  { id: 'dlg-m3', title: 'M3 — First Neural Network', subject: 'DL_GENAI', type: 'milestone', date: '2026-03-04', priority: 3, description: 'PyTorch basics, simple NN, training loop' },
-  { id: 'dlg-m4', title: 'M4 — Sequential Models', subject: 'DL_GENAI', type: 'milestone', date: '2026-03-11', priority: 3, description: 'RNN/LSTM/GRU implementation' },
-  { id: 'dlg-m5', title: 'M5 — Transformers', subject: 'DL_GENAI', type: 'milestone', date: '2026-03-18', priority: 3, description: 'BERT/RoBERTa fine-tuning' },
+  { id: 'dlg-m1', title: 'Milestone 1 — EDA & Baseline', subject: 'DL_GENAI', type: 'milestone', date: '2026-02-18', priority: 3, description: 'EDA, rule-based baseline, Kaggle submission' },
+  { id: 'dlg-m2', title: 'Milestone 2 — Classical ML', subject: 'DL_GENAI', type: 'milestone', date: '2026-02-25', priority: 3, description: 'Text preprocessing, BoW/TF-IDF, classical models' },
+  { id: 'dlg-m3', title: 'Milestone 3 — First Neural Network', subject: 'DL_GENAI', type: 'milestone', date: '2026-03-04', priority: 3, description: 'PyTorch basics, simple NN, training loop' },
+  { id: 'dlg-m4', title: 'Milestone 4 — Sequential Models', subject: 'DL_GENAI', type: 'milestone', date: '2026-03-11', priority: 3, description: 'RNN/LSTM/GRU implementation' },
+  { id: 'dlg-m5', title: 'Milestone 5 — Transformers', subject: 'DL_GENAI', type: 'milestone', date: '2026-03-18', priority: 3, description: 'BERT/RoBERTa fine-tuning' },
   { id: 'dlg-final', title: 'Final Submission & Presentation', subject: 'DL_GENAI', type: 'project', date: '2026-03-18', priority: 2, description: 'Final Kaggle submission, report, presentation' },
 ];
 
