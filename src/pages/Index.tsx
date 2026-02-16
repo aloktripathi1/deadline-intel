@@ -22,7 +22,7 @@ const Index = () => {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      <h1 className="text-2xl font-bold tracking-tight">Command Center</h1>
+      <h1 className="text-3xl font-bold tracking-tight">Command Center</h1>
 
       {/* Hero Countdown */}
       {nextCritical && (
@@ -42,7 +42,7 @@ const Index = () => {
               </div>
               <div className="text-right">
                 <span className={cn(
-                  "text-5xl font-mono font-bold tabular-nums",
+                  "text-6xl font-mono font-bold tabular-nums leading-none",
                   nextCritical.daysLeft <= 3 && "text-destructive",
                   nextCritical.daysLeft <= 5 && nextCritical.daysLeft > 3 && "text-urgency-red",
                   nextCritical.daysLeft <= 10 && nextCritical.daysLeft > 5 && "text-urgency-orange",
@@ -63,7 +63,7 @@ const Index = () => {
           <CardContent className="p-4 flex items-center gap-3">
             <CheckCircle2 className="h-4 w-4 text-urgency-green shrink-0" />
             <div>
-              <p className="text-2xl font-mono font-bold">{completedThisWeek}</p>
+              <p className="text-2xl font-mono font-bold tabular-nums">{completedThisWeek}</p>
               <p className="text-[10px] text-muted-foreground">Done this week</p>
             </div>
           </CardContent>
@@ -72,7 +72,7 @@ const Index = () => {
           <CardContent className="p-4 flex items-center gap-3">
             <TrendingUp className="h-4 w-4 text-steel shrink-0" />
             <div>
-              <p className="text-2xl font-mono font-bold">{completionRate}%</p>
+              <p className="text-2xl font-mono font-bold tabular-nums">{completionRate}%</p>
               <p className="text-[10px] text-muted-foreground">Completion rate</p>
             </div>
           </CardContent>
@@ -81,7 +81,7 @@ const Index = () => {
           <CardContent className="p-4 flex items-center gap-3">
             <Flame className="h-4 w-4 text-amber shrink-0" />
             <div>
-              <p className="text-2xl font-mono font-bold">{streak}</p>
+              <p className="text-2xl font-mono font-bold tabular-nums">{streak}</p>
               <p className="text-[10px] text-muted-foreground">Day streak</p>
             </div>
           </CardContent>

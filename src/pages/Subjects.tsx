@@ -26,7 +26,7 @@ const Subjects = () => {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      <h1 className="text-2xl font-bold tracking-tight">Subjects</h1>
+      <h1 className="text-3xl font-bold tracking-tight">Subjects</h1>
       {(['MLP', 'DL_GENAI', 'TDS'] as Subject[]).map((subject) => (
         <SubjectCard key={subject} subject={subject} items={getSubjectItems(subject)} onToggle={toggleComplete} />
       ))}

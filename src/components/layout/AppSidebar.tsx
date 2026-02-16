@@ -21,11 +21,11 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon">
       <SidebarContent className="pt-4">
-        <div className="px-4 pb-4 group-data-[collapsible=icon]:hidden">
-          <h1 className="text-sm font-bold tracking-wider uppercase text-foreground">
+        <div className="px-4 pb-5 group-data-[collapsible=icon]:hidden">
+          <h1 className="text-base font-bold tracking-tight text-foreground font-display">
             Deadline Intel
           </h1>
-          <p className="text-[10px] text-muted-foreground mt-0.5">Jan 2026 Term</p>
+          <p className="text-[10px] text-muted-foreground mt-0.5 font-mono uppercase tracking-widest">Jan 2026</p>
         </div>
         <SidebarGroup>
           <SidebarGroupContent>

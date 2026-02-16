@@ -55,7 +55,7 @@ const Timeline = () => {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold tracking-tight">Academic Timeline</h1>
+      <h1 className="text-3xl font-bold tracking-tight">Academic Timeline</h1>
       <p className="text-sm text-muted-foreground">February — May 2026 · Scroll horizontally to explore</p>
 
       <div ref={scrollRef} className="overflow-x-auto pb-4">
