@@ -25,7 +25,7 @@
     --border: 220 13% 88%;
     --input: 220 13% 88%;
     --ring: 220 20% 10%;
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
     /* Subject colors */
     --steel: 210 40% 52%;
@@ -40,6 +40,9 @@
     --urgency-orange: 25 95% 53%;
     --urgency-green: 142 60% 40%;
 
+    /* Glow */
+    --glow-primary: 220 60% 60%;
+
     /* Sidebar */
     --sidebar-background: 220 15% 96%;
     --sidebar-foreground: 220 10% 30%;
@@ -52,44 +55,46 @@
   }
 
   .dark {
-    --background: 222 22% 6%;
+    --background: 225 25% 5%;
     --foreground: 210 20% 92%;
-    --card: 222 20% 9%;
+    --card: 225 22% 8%;
     --card-foreground: 210 20% 92%;
-    --popover: 222 20% 9%;
+    --popover: 225 22% 8%;
     --popover-foreground: 210 20% 92%;
     --primary: 210 20% 92%;
-    --primary-foreground: 222 22% 6%;
-    --secondary: 220 16% 14%;
+    --primary-foreground: 225 25% 5%;
+    --secondary: 222 18% 12%;
     --secondary-foreground: 210 20% 92%;
-    --muted: 220 16% 14%;
-    --muted-foreground: 220 10% 55%;
-    --accent: 220 16% 16%;
+    --muted: 222 18% 12%;
+    --muted-foreground: 220 10% 50%;
+    --accent: 222 18% 14%;
     --accent-foreground: 210 20% 92%;
     --destructive: 0 62% 45%;
     --destructive-foreground: 0 0% 98%;
-    --border: 220 16% 16%;
-    --input: 220 16% 16%;
+    --border: 222 15% 14%;
+    --input: 222 15% 14%;
     --ring: 210 20% 70%;
 
-    --steel: 210 45% 58%;
+    --steel: 210 50% 62%;
     --steel-foreground: 0 0% 98%;
-    --amber: 38 92% 55%;
+    --amber: 38 92% 58%;
     --amber-foreground: 0 0% 6%;
-    --emerald: 160 55% 45%;
+    --emerald: 160 55% 50%;
     --emerald-foreground: 0 0% 98%;
 
-    --urgency-red: 0 72% 55%;
-    --urgency-orange: 25 95% 58%;
-    --urgency-green: 142 55% 45%;
+    --urgency-red: 0 72% 58%;
+    --urgency-orange: 25 95% 60%;
+    --urgency-green: 142 55% 50%;
 
-    --sidebar-background: 222 20% 8%;
-    --sidebar-foreground: 210 15% 70%;
+    --glow-primary: 210 60% 50%;
+
+    --sidebar-background: 225 22% 7%;
+    --sidebar-foreground: 210 15% 60%;
     --sidebar-primary: 210 20% 92%;
-    --sidebar-primary-foreground: 222 22% 6%;
-    --sidebar-accent: 220 16% 14%;
+    --sidebar-primary-foreground: 225 25% 5%;
+    --sidebar-accent: 222 18% 12%;
     --sidebar-accent-foreground: 210 20% 92%;
-    --sidebar-border: 220 16% 14%;
+    --sidebar-border: 222 15% 12%;
     --sidebar-ring: 210 20% 70%;
   }
 }
@@ -104,7 +109,7 @@
   }
   h1, h2, h3, h4 {
     font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-    letter-spacing: -0.025em;
+    letter-spacing: -0.03em;
     font-weight: 700;
   }
   .font-mono {
@@ -115,11 +120,58 @@
   }
 }
 
+@layer components {
+  .glass-card {
+    @apply bg-card/80 backdrop-blur-xl border border-border/50 shadow-lg;
+  }
+  .glass-card-hover {
+    @apply glass-card transition-all duration-300 hover:border-border hover:shadow-xl hover:-translate-y-0.5;
+  }
+  .glow-border {
+    box-shadow: 0 0 0 1px hsl(var(--border)), 0 0 20px -8px hsl(var(--glow-primary) / 0.15);
+  }
+  .gradient-text {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, hsl(var(--foreground)), hsl(var(--muted-foreground)));
+  }
+  .section-header {
+    @apply flex items-center gap-2 text-sm font-semibold tracking-wide;
+  }
+  .stat-value {
+    @apply text-2xl font-mono font-bold tabular-nums leading-none;
+  }
+}
+
 @keyframes pulse-urgency {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.6; }
 }
 
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes float-in {
+  0% { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
 .animate-pulse-urgency {
   animation: pulse-urgency 1.5s ease-in-out infinite;
 }
+
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent, hsl(var(--glow-primary) / 0.06), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+.animate-float-in {
+  animation: float-in 0.5s ease-out both;
+}
+
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.1s; }
+.stagger-3 { animation-delay: 0.15s; }
+.stagger-4 { animation-delay: 0.2s; }

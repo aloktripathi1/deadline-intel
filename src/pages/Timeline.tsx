@@ -11,7 +11,7 @@ const MONTHS = [
   { label: 'May', start: '2026-05-01', end: '2026-05-31' },
 ];
 
-const TOTAL_DAYS = 120; // ~Feb 1 to May 31
+const TOTAL_DAYS = 120;
 
 const subjectBg: Record<string, string> = {
   MLP: 'bg-steel',
@@ -30,7 +30,6 @@ const Timeline = () => {
   const { items } = useDeadlines();
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Cluster detection: find 3-day windows with 3+ items
   const clusters = useMemo(() => {
     const pending = items.filter((i) => !i.completed);
     const result: { start: number; end: number }[] = [];
@@ -54,20 +53,22 @@ const Timeline = () => {
   const nonExams = items.filter((i) => i.type !== 'exam');
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-3xl font-bold tracking-tight">Academic Timeline</h1>
-      <p className="text-sm text-muted-foreground">February — May 2026 · Scroll horizontally to explore</p>
+    <div className="space-y-8">
+      <div className="space-y-1">
+        <h1 className="text-3xl font-bold tracking-tight">Academic Timeline</h1>
+        <p className="text-sm text-muted-foreground">February — May 2026 · Scroll horizontally to explore</p>
+      </div>
 
-      <div ref={scrollRef} className="overflow-x-auto pb-4">
+      <div ref={scrollRef} className="overflow-x-auto pb-4 glass-card rounded-xl p-4">
         <div className="relative" style={{ width: `${TOTAL_DAYS * 12}px`, minHeight: '320px' }}>
           {/* Month markers */}
-          <div className="flex border-b border-border">
+          <div className="flex border-b border-border/50">
             {MONTHS.map((m) => {
               const startOff = dateToDayOffset(m.start);
               const endOff = dateToDayOffset(m.end);
               const width = (endOff - startOff) * 12;
               return (
-                <div key={m.label} style={{ width: `${width}px` }} className="text-xs font-semibold text-muted-foreground px-2 py-2 border-r border-border">
+                <div key={m.label} style={{ width: `${width}px` }} className="text-xs font-semibold text-muted-foreground px-2 py-2.5 border-r border-border/30">
                   {m.label} 2026
                 </div>
               );
@@ -78,10 +79,10 @@ const Timeline = () => {
           {clusters.map((c, i) => (
             <div
               key={i}
-              className="absolute top-10 bottom-0 bg-urgency-red/8 border-l border-r border-urgency-red/20 z-0"
+              className="absolute top-12 bottom-0 bg-urgency-red/[0.06] border-l border-r border-urgency-red/15 z-0 rounded-sm"
               style={{ left: `${c.start * 12}px`, width: `${(c.end - c.start) * 12}px` }}
             >
-              <span className="text-[8px] text-urgency-red px-1 absolute top-1">CRUNCH</span>
+              <span className="text-[8px] font-bold text-urgency-red/70 px-1 absolute top-1 tracking-wider">CRUNCH</span>
             </div>
           ))}
 
@@ -91,10 +92,10 @@ const Timeline = () => {
             return (
               <div
                 key={exam.id}
-                className="absolute top-10 bottom-0 w-px bg-destructive/50 z-10"
+                className="absolute top-12 bottom-0 w-px bg-destructive/40 z-10"
                 style={{ left: `${offset * 12}px` }}
               >
-                <Badge variant="destructive" className="absolute -top-0.5 -translate-x-1/2 text-[9px] px-1 py-0 whitespace-nowrap">
+                <Badge variant="destructive" className="absolute -top-0.5 -translate-x-1/2 text-[9px] px-1.5 py-0 whitespace-nowrap shadow-sm">
                   {exam.title}
                 </Badge>
               </div>
@@ -111,10 +112,10 @@ const Timeline = () => {
               <div
                 key={item.id}
                 className={cn(
-                  "absolute h-2.5 w-2.5 rounded-full z-20 cursor-default",
+                  "absolute rounded-full z-20 cursor-default transition-transform duration-200 hover:scale-150",
+                  item.type === 'ga' ? "h-2.5 w-2.5" : "h-3.5 w-3.5",
                   subjectBg[item.subject],
-                  item.completed && "opacity-30",
-                  item.type !== 'ga' && "h-3 w-3",
+                  item.completed && "opacity-25",
                 )}
                 style={{ left: `${offset * 12 - 5}px`, top: `${60 + row * 70 + typeOffset}px` }}
                 title={`${item.title} — ${SUBJECT_LABELS[item.subject as Subject | 'ALL']} — ${new Date(item.date).toLocaleDateString()}`}
@@ -126,7 +127,7 @@ const Timeline = () => {
           {(['MLP', 'DL_GENAI', 'TDS'] as Subject[]).map((subject, idx) => (
             <div
               key={subject}
-              className="absolute left-0 text-[10px] font-medium text-muted-foreground"
+              className="absolute left-0 text-[10px] font-medium text-muted-foreground/70"
               style={{ top: `${60 + idx * 70 - 12}px` }}
             >
               {SUBJECT_LABELS[subject]}
@@ -136,12 +137,12 @@ const Timeline = () => {
       </div>
 
       {/* Legend */}
-      <div className="flex items-center gap-4 text-[10px] text-muted-foreground">
-        <div className="flex items-center gap-1"><div className="h-2.5 w-2.5 rounded-full bg-steel" /> MLP</div>
-        <div className="flex items-center gap-1"><div className="h-2.5 w-2.5 rounded-full bg-amber" /> DL GenAI</div>
-        <div className="flex items-center gap-1"><div className="h-2.5 w-2.5 rounded-full bg-emerald" /> TDS</div>
-        <div className="flex items-center gap-1"><div className="h-3 w-3 rounded-full bg-muted-foreground/30" /> Milestone</div>
-        <div className="flex items-center gap-1 text-urgency-red">■ Crunch Zone</div>
+      <div className="flex items-center gap-5 text-[10px] text-muted-foreground">
+        <div className="flex items-center gap-1.5"><div className="h-2.5 w-2.5 rounded-full bg-steel" /> MLP</div>
+        <div className="flex items-center gap-1.5"><div className="h-2.5 w-2.5 rounded-full bg-amber" /> DL GenAI</div>
+        <div className="flex items-center gap-1.5"><div className="h-2.5 w-2.5 rounded-full bg-emerald" /> TDS</div>
+        <div className="flex items-center gap-1.5"><div className="h-3 w-3 rounded-full bg-muted-foreground/20" /> Milestone</div>
+        <div className="flex items-center gap-1.5 text-urgency-red font-medium">■ Crunch Zone</div>
       </div>
     </div>
   );

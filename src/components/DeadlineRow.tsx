@@ -10,9 +10,9 @@ interface DeadlineRowProps {
 }
 
 const subjectColorMap: Record<string, string> = {
-  MLP: 'bg-steel/15 text-steel border-steel/30',
-  DL_GENAI: 'bg-amber/15 text-amber border-amber/30',
-  TDS: 'bg-emerald/15 text-emerald border-emerald/30',
+  MLP: 'bg-steel/10 text-steel border-steel/25',
+  DL_GENAI: 'bg-amber/10 text-amber border-amber/25',
+  TDS: 'bg-emerald/10 text-emerald border-emerald/25',
   ALL: 'bg-muted text-muted-foreground border-border',
 };
 
@@ -24,10 +24,10 @@ export function DeadlineRow({ item, onToggle, showSubject = true }: DeadlineRowP
   return (
     <div
       className={cn(
-        "flex items-center gap-3 px-3 py-2.5 rounded-md transition-all group",
-        item.completed && "opacity-50",
-        isOverdue && !item.completed && "bg-destructive/8 border border-destructive/20",
-        urgency === 'red' && !item.completed && !isOverdue && "bg-destructive/5",
+        "flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200 group hover:bg-accent/40",
+        item.completed && "opacity-45",
+        isOverdue && !item.completed && "bg-destructive/[0.06] border border-destructive/15",
+        urgency === 'red' && !item.completed && !isOverdue && "bg-destructive/[0.03]",
         isCritical && "animate-pulse-urgency",
       )}
     >
@@ -42,11 +42,13 @@ export function DeadlineRow({ item, onToggle, showSubject = true }: DeadlineRowP
           <span className={cn("text-sm font-medium truncate", item.completed && "line-through text-muted-foreground")}>
             {item.title}
           </span>
-          <Badge variant="outline" className={cn("text-[10px] px-1.5 py-0 h-4 shrink-0", subjectColorMap[item.subject])}>
-            {SUBJECT_LABELS[item.subject as Subject | 'ALL']}
-          </Badge>
+          {showSubject && (
+            <Badge variant="outline" className={cn("text-[10px] px-1.5 py-0 h-4 shrink-0 font-medium", subjectColorMap[item.subject])}>
+              {SUBJECT_LABELS[item.subject as Subject | 'ALL']}
+            </Badge>
+          )}
         </div>
-        <span className="text-[10px] text-muted-foreground">{getPriorityLabel(item.type)}</span>
+        <span className="text-[10px] text-muted-foreground/70">{getPriorityLabel(item.type)}</span>
       </div>
 
       <div className="shrink-0 text-right">
@@ -60,7 +62,7 @@ export function DeadlineRow({ item, onToggle, showSubject = true }: DeadlineRowP
         )}>
           {item.completed ? 'Done' : isOverdue ? `${Math.abs(item.daysLeft)}d overdue` : item.daysLeft === 0 ? 'Today' : `${item.daysLeft}d`}
         </span>
-        <div className="text-[10px] text-muted-foreground">
+        <div className="text-[10px] text-muted-foreground/60">
           {new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
         </div>
       </div>

@@ -20,12 +20,19 @@ const items = [
 export function AppSidebar() {
   return (
     <Sidebar collapsible="icon">
-      <SidebarContent className="pt-4">
-        <div className="px-4 pb-5 group-data-[collapsible=icon]:hidden">
-          <h1 className="text-base font-bold tracking-tight text-foreground font-display">
-            Deadline Intel
-          </h1>
-          <p className="text-[10px] text-muted-foreground mt-0.5 font-mono uppercase tracking-widest">Jan 2026</p>
+      <SidebarContent className="pt-5">
+        <div className="px-4 pb-6 group-data-[collapsible=icon]:hidden">
+          <div className="flex items-center gap-2">
+            <div className="h-7 w-7 rounded-lg bg-foreground flex items-center justify-center">
+              <span className="text-xs font-bold text-background font-mono">DI</span>
+            </div>
+            <div>
+              <h1 className="text-sm font-bold tracking-tight text-foreground font-display">
+                Deadline Intel
+              </h1>
+              <p className="text-[9px] text-muted-foreground font-mono uppercase tracking-[0.2em]">Jan 2026 Term</p>
+            </div>
+          </div>
         </div>
         <SidebarGroup>
           <SidebarGroupContent>
@@ -36,7 +43,7 @@ export function AppSidebar() {
                     <NavLink
                       to={item.url}
                       end={item.url === "/"}
-                      className="hover:bg-accent/50"
+                      className="hover:bg-accent/60 transition-colors duration-200"
                       activeClassName="bg-accent text-foreground font-medium"
                     >
                       <item.icon className="h-4 w-4" />
