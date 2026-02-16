@@ -32,10 +32,10 @@ const Index = () => {
       {nextCritical && (
         <Card className={cn(
           "overflow-hidden glass-card relative group",
-          nextCritical.daysLeft <= 3 && "border-destructive/40 animate-pulse-urgency",
+          nextCritical.daysLeft <= 3 && "border-destructive/40",
           nextCritical.daysLeft <= 5 && nextCritical.daysLeft > 3 && "border-urgency-red/30",
         )}>
-          <div className="absolute inset-0 animate-shimmer pointer-events-none" />
+          
           <CardContent className="p-8 relative">
             <div className="flex items-center justify-between">
               <div className="space-y-2">
