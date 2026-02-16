@@ -1,0 +1,119 @@
+import { useState, useCallback, useMemo } from 'react';
+import { ALL_DEADLINES } from '@/data/deadlines';
+import { DeadlineItem, DeadlineState, getDaysLeft, getUrgencyZone, Subject } from '@/types/deadline';
+
+const STORAGE_KEY = 'deadline-intel-state';
+
+function loadState(): DeadlineState {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch {}
+  return { completedIds: [], streak: 0, lastCompletionDate: null, theme: 'dark' };
+}
+
+function saveState(state: DeadlineState) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+export function useDeadlines() {
+  const [state, setState] = useState<DeadlineState>(loadState);
+
+  const toggleComplete = useCallback((id: string) => {
+    setState((prev) => {
+      const isCompleted = prev.completedIds.includes(id);
+      const completedIds = isCompleted
+        ? prev.completedIds.filter((cid) => cid !== id)
+        : [...prev.completedIds, id];
+      const today = new Date().toISOString().split('T')[0];
+      const newState: DeadlineState = {
+        ...prev,
+        completedIds,
+        lastCompletionDate: isCompleted ? prev.lastCompletionDate : today,
+        streak: isCompleted ? prev.streak : (prev.lastCompletionDate === today ? prev.streak : prev.streak + 1),
+      };
+      saveState(newState);
+      return newState;
+    });
+  }, []);
+
+  const resetData = useCallback(() => {
+    const newState: DeadlineState = { completedIds: [], streak: 0, lastCompletionDate: null, theme: state.theme };
+    saveState(newState);
+    setState(newState);
+  }, [state.theme]);
+
+  const setTheme = useCallback((theme: 'dark' | 'light') => {
+    setState((prev) => {
+      const newState = { ...prev, theme };
+      saveState(newState);
+      return newState;
+    });
+  }, []);
+
+  const items = useMemo(() => {
+    return ALL_DEADLINES.map((item) => ({
+      ...item,
+      completed: state.completedIds.includes(item.id),
+      daysLeft: getDaysLeft(item.date),
+      urgency: getUrgencyZone(getDaysLeft(item.date)),
+    }));
+  }, [state.completedIds]);
+
+  const pending = useMemo(() => items.filter((i) => !i.completed), [items]);
+  const completed = useMemo(() => items.filter((i) => i.completed), [items]);
+
+  const nextCritical = useMemo(() => {
+    return pending
+      .filter((i) => i.daysLeft >= 0)
+      .sort((a, b) => a.daysLeft - b.daysLeft || a.priority - b.priority)[0] || null;
+  }, [pending]);
+
+  const redZone = useMemo(() => pending.filter((i) => i.urgency === 'red').sort((a, b) => a.daysLeft - b.daysLeft), [pending]);
+  const orangeZone = useMemo(() => pending.filter((i) => i.urgency === 'orange').sort((a, b) => a.daysLeft - b.daysLeft), [pending]);
+  const overdue = useMemo(() => pending.filter((i) => i.urgency === 'overdue').sort((a, b) => a.daysLeft - b.daysLeft), [pending]);
+  const upcoming7 = useMemo(() => pending.filter((i) => i.daysLeft >= 0 && i.daysLeft <= 7).sort((a, b) => a.daysLeft - b.daysLeft), [pending]);
+
+  const completedThisWeek = useMemo(() => {
+    const now = new Date();
+    const startOfWeek = new Date(now);
+    startOfWeek.setDate(now.getDate() - now.getDay());
+    startOfWeek.setHours(0, 0, 0, 0);
+    return completed.filter((i) => new Date(i.date) >= startOfWeek).length;
+  }, [completed]);
+
+  const completionRate = useMemo(() => {
+    const pastItems = items.filter((i) => i.daysLeft < 0 || i.completed);
+    if (pastItems.length === 0) return 100;
+    const doneCount = pastItems.filter((i) => i.completed).length;
+    return Math.round((doneCount / pastItems.length) * 100);
+  }, [items]);
+
+  const atRisk = useMemo(() => {
+    return pending.filter((i) => i.daysLeft >= 0 && i.daysLeft <= 7).length >= 3;
+  }, [pending]);
+
+  const getSubjectItems = useCallback((subject: Subject) => {
+    return items.filter((i) => i.subject === subject || i.subject === 'ALL');
+  }, [items]);
+
+  return {
+    items,
+    pending,
+    completed,
+    nextCritical,
+    redZone,
+    orangeZone,
+    overdue,
+    upcoming7,
+    completedThisWeek,
+    completionRate,
+    atRisk,
+    streak: state.streak,
+    theme: state.theme,
+    toggleComplete,
+    resetData,
+    setTheme,
+    getSubjectItems,
+  };
+}
