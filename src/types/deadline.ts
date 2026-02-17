@@ -22,9 +22,9 @@ export interface DeadlineState {
 }
 
 export const SUBJECT_LABELS: Record<Subject | 'ALL', string> = {
-  MLP: 'MLP',
-  DL_GENAI: 'DL GenAI',
-  TDS: 'TDS',
+  MLP: 'Machine Learning Practice',
+  DL_GENAI: 'Deep Learning & GenAI',
+  TDS: 'Tools in Data Science',
   ALL: 'All Subjects',
 };
 
