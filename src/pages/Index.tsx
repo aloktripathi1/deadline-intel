@@ -24,7 +24,7 @@ const Index = () => {
     <div className="max-w-4xl mx-auto space-y-8">
       {/* Page Title */}
       <div className="space-y-1">
-        <h1 className="text-3xl font-bold tracking-tight">Command Center</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Jan 2026 - Deadlines</h1>
         <p className="text-sm text-muted-foreground">Your academic intelligence at a glance</p>
       </div>
 

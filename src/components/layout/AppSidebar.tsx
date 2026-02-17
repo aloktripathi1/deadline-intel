@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/sidebar";
 
 const items = [
-  { title: "Command Center", url: "/", icon: LayoutDashboard },
+  { title: "Jan 2026 - Deadlines", url: "/", icon: LayoutDashboard },
   { title: "Timeline", url: "/timeline", icon: GanttChart },
   { title: "Subjects", url: "/subjects", icon: BookOpen },
   { title: "Settings", url: "/settings", icon: Settings },
