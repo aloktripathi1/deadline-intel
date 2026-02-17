@@ -1,7 +1,7 @@
 import { DeadlineItem } from '@/types/deadline';
 
 const gaWeeks = [
-  { week: 1, date: '2026-02-15' },
+  { week: 1, date: '2026-02-18' },
   { week: 2, date: '2026-02-22' },
   { week: 3, date: '2026-03-01' },
   { week: 4, date: '2026-03-08' },
