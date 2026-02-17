@@ -43,7 +43,7 @@ export function DeadlineRow({ item, onToggle, showSubject = true }: DeadlineRowP
             {item.title}
           </span>
           {showSubject && (
-            <Badge variant="outline" className={cn("text-[10px] px-1.5 py-0 h-4 shrink-0 font-medium", subjectColorMap[item.subject])}>
+            <Badge variant="outline" className={cn("text-xs px-2 py-0.5 h-5 shrink-0 font-medium", subjectColorMap[item.subject])}>
               {SUBJECT_LABELS[item.subject as Subject | 'ALL']}
             </Badge>
           )}
