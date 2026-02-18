@@ -11,7 +11,7 @@ const THEORY_TYPES: DeadlineType[] = ['ga', 'exam', 'oppe', 'roe'];
 const PROJECT_TYPES: DeadlineType[] = ['milestone', 'kaggle', 'kaggle_review', 'form', 'project'];
 
 const Index = () => {
-  const [activeTab, setActiveTab] = useState<'all' | 'theory' | 'projects'>('all');
+  const [activeTab, setActiveTab] = useState<'all' | 'theory' | 'projects'>('theory');
 
   const {
     items,
@@ -40,7 +40,6 @@ const Index = () => {
   const filteredUpcoming = filterByCategory(upcoming7, activeTab);
 
   const tabs = [
-    { key: 'all' as const, label: 'All', icon: null },
     { key: 'theory' as const, label: 'Theory', icon: BookOpen },
     { key: 'projects' as const, label: 'Projects', icon: FolderGit2 },
   ];
@@ -60,7 +59,7 @@ const Index = () => {
             key={key}
             onClick={() => setActiveTab(key)}
             className={cn(
-              "flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200",
+              "flex items-center gap-1.5 px-5 py-2 rounded-lg text-sm font-medium transition-all duration-200",
               activeTab === key
                 ? "bg-card text-foreground shadow-sm border border-border/60"
                 : "text-muted-foreground hover:text-foreground"
@@ -68,16 +67,6 @@ const Index = () => {
           >
             {Icon && <Icon className="h-3.5 w-3.5" />}
             {label}
-            {key === 'theory' && (
-              <span className="text-[10px] font-mono text-muted-foreground">
-                GAs · Exams · OPPE
-              </span>
-            )}
-            {key === 'projects' && (
-              <span className="text-[10px] font-mono text-muted-foreground">
-                Milestones · Kaggle
-              </span>
-            )}
           </button>
         ))}
       </div>
