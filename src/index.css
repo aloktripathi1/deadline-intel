@@ -35,10 +35,10 @@
     --emerald: 160 60% 40%;
     --emerald-foreground: 0 0% 98%;
 
-    /* Urgency — softened for eye comfort */
-    --urgency-red: 5 55% 52%;
-    --urgency-orange: 30 70% 52%;
-    --urgency-green: 150 40% 42%;
+    /* Urgency — balanced, not harsh, not dim */
+    --urgency-red: 4 65% 56%;
+    --urgency-orange: 28 80% 54%;
+    --urgency-green: 148 48% 44%;
 
     /* Glow */
     --glow-primary: 220 60% 60%;
@@ -82,9 +82,9 @@
     --emerald: 160 55% 50%;
     --emerald-foreground: 0 0% 98%;
 
-    --urgency-red: 5 50% 60%;
-    --urgency-orange: 30 65% 60%;
-    --urgency-green: 150 40% 54%;
+    --urgency-red: 4 62% 62%;
+    --urgency-orange: 28 75% 58%;
+    --urgency-green: 148 46% 54%;
 
     --glow-primary: 210 60% 50%;
 
