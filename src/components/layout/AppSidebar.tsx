@@ -1,5 +1,7 @@
-import { LayoutDashboard, GanttChart, BookOpen, Settings, PanelLeft } from "lucide-react";
+import { LayoutDashboard, GanttChart, BookOpen, Settings, Sun, Moon } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
+import { useDeadlines } from "@/hooks/use-deadlines";
+import { useEffect } from "react";
 import {
   Sidebar,
   SidebarContent,
@@ -20,11 +22,19 @@ const items = [
 ];
 
 export function AppSidebar() {
+  const { theme, setTheme } = useDeadlines();
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+  }, [theme]);
+
+  const toggleTheme = () => setTheme(theme === 'dark' ? 'light' : 'dark');
+
   return (
     <Sidebar collapsible="offcanvas">
       <SidebarContent className="pt-5">
-        {/* Logo — hidden when collapsed */}
-        <div className="px-4 pb-6 group-data-[collapsible=offcanvas]:hidden">
+        {/* Logo */}
+        <div className="px-4 pb-6">
           <div className="flex items-center gap-2">
             <div className="h-7 w-7 rounded-lg bg-foreground flex items-center justify-center shrink-0">
               <span className="text-xs font-bold text-background font-mono">DI</span>
@@ -61,8 +71,18 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      {/* Trigger lives at the bottom of the sidebar */}
-      <SidebarFooter className="border-t border-border/40 p-2">
+      <SidebarFooter className="border-t border-border/40 p-2 space-y-1">
+        {/* Theme toggle */}
+        <button
+          onClick={toggleTheme}
+          className="w-full flex items-center gap-2 px-2 py-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent/60 transition-colors duration-200 text-sm"
+        >
+          {theme === 'dark'
+            ? <Sun className="h-4 w-4 shrink-0" />
+            : <Moon className="h-4 w-4 shrink-0" />}
+          <span>{theme === 'dark' ? 'Light mode' : 'Dark mode'}</span>
+        </button>
+        {/* Collapse trigger */}
         <SidebarTrigger className="w-full flex items-center justify-start gap-2 px-2 py-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent/60 transition-colors duration-200 text-sm" />
       </SidebarFooter>
     </Sidebar>
