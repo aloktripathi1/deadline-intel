@@ -1,13 +1,15 @@
-import { LayoutDashboard, GanttChart, BookOpen, Settings } from "lucide-react";
+import { LayoutDashboard, GanttChart, BookOpen, Settings, PanelLeft } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarTrigger,
 } from "@/components/ui/sidebar";
 
 const items = [
@@ -19,11 +21,12 @@ const items = [
 
 export function AppSidebar() {
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible="offcanvas">
       <SidebarContent className="pt-5">
-        <div className="px-4 pb-6 group-data-[collapsible=icon]:hidden">
+        {/* Logo — hidden when collapsed */}
+        <div className="px-4 pb-6 group-data-[collapsible=offcanvas]:hidden">
           <div className="flex items-center gap-2">
-            <div className="h-7 w-7 rounded-lg bg-foreground flex items-center justify-center">
+            <div className="h-7 w-7 rounded-lg bg-foreground flex items-center justify-center shrink-0">
               <span className="text-xs font-bold text-background font-mono">DI</span>
             </div>
             <div>
@@ -34,6 +37,7 @@ export function AppSidebar() {
             </div>
           </div>
         </div>
+
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -56,6 +60,12 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+
+      {/* Trigger lives at the bottom of the sidebar */}
+      <SidebarFooter className="border-t border-border/40 p-2">
+        <SidebarTrigger className="w-full flex items-center justify-start gap-2 px-2 py-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent/60 transition-colors duration-200 text-sm" />
+      </SidebarFooter>
     </Sidebar>
   );
 }
+
