@@ -1,13 +1,20 @@
+import { useState } from "react";
 import { useDeadlines } from "@/hooks/use-deadlines";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { DeadlineRow } from "@/components/DeadlineRow";
 import { cn } from "@/lib/utils";
-import { AlertTriangle, TrendingUp, CheckCircle2, Flame, Zap, Clock } from "lucide-react";
-import { SUBJECT_LABELS, Subject } from "@/types/deadline";
+import { AlertTriangle, TrendingUp, CheckCircle2, Flame, Zap, Clock, BookOpen, FolderGit2 } from "lucide-react";
+import { SUBJECT_LABELS, Subject, DeadlineType } from "@/types/deadline";
+
+const THEORY_TYPES: DeadlineType[] = ['ga', 'exam', 'oppe', 'roe'];
+const PROJECT_TYPES: DeadlineType[] = ['milestone', 'kaggle', 'kaggle_review', 'form', 'project'];
 
 const Index = () => {
+  const [activeTab, setActiveTab] = useState<'all' | 'theory' | 'projects'>('all');
+
   const {
+    items,
     nextCritical,
     redZone,
     orangeZone,
@@ -20,22 +27,68 @@ const Index = () => {
     toggleComplete,
   } = useDeadlines();
 
+  // Filter helpers
+  const filterByCategory = (arr: typeof items, cat: 'all' | 'theory' | 'projects') => {
+    if (cat === 'theory') return arr.filter(i => THEORY_TYPES.includes(i.type));
+    if (cat === 'projects') return arr.filter(i => PROJECT_TYPES.includes(i.type));
+    return arr;
+  };
+
+  const filteredOverdue = filterByCategory(overdue, activeTab);
+  const filteredRed = filterByCategory(redZone, activeTab);
+  const filteredOrange = filterByCategory(orangeZone, activeTab);
+  const filteredUpcoming = filterByCategory(upcoming7, activeTab);
+
+  const tabs = [
+    { key: 'all' as const, label: 'All', icon: null },
+    { key: 'theory' as const, label: 'Theory', icon: BookOpen },
+    { key: 'projects' as const, label: 'Projects', icon: FolderGit2 },
+  ];
+
   return (
     <div className="max-w-4xl mx-auto space-y-8">
       {/* Page Title */}
       <div className="space-y-1">
-        <h1 className="text-3xl font-bold tracking-tight">Jan 2026 - Deadlines</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Jan 2026 — Deadlines</h1>
         <p className="text-sm text-muted-foreground">Your academic intelligence at a glance</p>
+      </div>
+
+      {/* Category Tabs */}
+      <div className="flex gap-1 p-1 rounded-xl bg-muted/40 border border-border/50 w-fit">
+        {tabs.map(({ key, label, icon: Icon }) => (
+          <button
+            key={key}
+            onClick={() => setActiveTab(key)}
+            className={cn(
+              "flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200",
+              activeTab === key
+                ? "bg-card text-foreground shadow-sm border border-border/60"
+                : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            {Icon && <Icon className="h-3.5 w-3.5" />}
+            {label}
+            {key === 'theory' && (
+              <span className="text-[10px] font-mono text-muted-foreground">
+                GAs · Exams · OPPE
+              </span>
+            )}
+            {key === 'projects' && (
+              <span className="text-[10px] font-mono text-muted-foreground">
+                Milestones · Kaggle
+              </span>
+            )}
+          </button>
+        ))}
       </div>
 
       {/* Hero Countdown */}
       {nextCritical && (
         <Card className={cn(
           "overflow-hidden glass-card relative group",
-          nextCritical.daysLeft <= 3 && "border-destructive/40",
-          nextCritical.daysLeft <= 5 && nextCritical.daysLeft > 3 && "border-urgency-red/30",
+          nextCritical.daysLeft <= 3 && "border-destructive/30",
+          nextCritical.daysLeft <= 5 && nextCritical.daysLeft > 3 && "border-urgency-red/25",
         )}>
-          
           <CardContent className="p-8 relative">
             <div className="flex items-center justify-between">
               <div className="space-y-2">
@@ -80,7 +133,7 @@ const Index = () => {
           <Card key={label} className={cn("glass-card-hover animate-float-in", delay)}>
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className={cn("h-8 w-8 rounded-lg flex items-center justify-center bg-muted/50")}>
+                <div className="h-8 w-8 rounded-lg flex items-center justify-center bg-muted/50">
                   <Icon className={cn("h-4 w-4", iconClass)} />
                 </div>
                 <div>
@@ -108,44 +161,51 @@ const Index = () => {
         </Card>
       </div>
 
+      {/* Empty state for filtered view */}
+      {filteredOverdue.length === 0 && filteredRed.length === 0 && filteredOrange.length === 0 && filteredUpcoming.length === 0 && (
+        <div className="text-center py-12 text-muted-foreground text-sm">
+          No pending deadlines in this category.
+        </div>
+      )}
+
       {/* Overdue */}
-      {overdue.length > 0 && (
+      {filteredOverdue.length > 0 && (
         <DeadlineSection
-          title={`Overdue (${overdue.length})`}
+          title={`Overdue (${filteredOverdue.length})`}
           titleClass="text-destructive"
           icon={<AlertTriangle className="h-4 w-4" />}
-          cardClass="border-destructive/20 bg-destructive/[0.02]"
-          items={overdue}
+          cardClass="border-destructive/15 bg-destructive/[0.025]"
+          items={filteredOverdue}
           onToggle={toggleComplete}
         />
       )}
 
       {/* Red Zone */}
-      {redZone.length > 0 && (
+      {filteredRed.length > 0 && (
         <DeadlineSection
-          title={`Red Zone — Due within 5 days (${redZone.length})`}
+          title={`Due within 5 days (${filteredRed.length})`}
           titleClass="text-urgency-red"
           cardClass="border-urgency-red/10"
-          items={redZone}
+          items={filteredRed}
           onToggle={toggleComplete}
         />
       )}
 
       {/* Orange Zone */}
-      {orangeZone.length > 0 && (
+      {filteredOrange.length > 0 && (
         <DeadlineSection
-          title={`Warning — Due within 10 days (${orangeZone.length})`}
+          title={`Due within 10 days (${filteredOrange.length})`}
           titleClass="text-urgency-orange"
-          items={orangeZone}
+          items={filteredOrange}
           onToggle={toggleComplete}
         />
       )}
 
       {/* Upcoming 7 days */}
-      {upcoming7.length > 0 && (
+      {filteredUpcoming.length > 0 && (
         <DeadlineSection
-          title={`Upcoming 7 Days (${upcoming7.length})`}
-          items={upcoming7}
+          title={`Upcoming 7 Days (${filteredUpcoming.length})`}
+          items={filteredUpcoming}
           onToggle={toggleComplete}
         />
       )}
