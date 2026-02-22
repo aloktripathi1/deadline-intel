@@ -3,48 +3,74 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { DeadlineRow } from "@/components/DeadlineRow";
-import { Subject, SUBJECT_LABELS } from "@/types/deadline";
+import { Subject, SUBJECT_LABELS, COURSE_CATALOG, CourseLevel } from "@/types/deadline";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 
-const subjectAccent: Record<Subject, string> = {
-  MLP: 'border-l-steel',
-  DL_GENAI: 'border-l-amber',
-  TDS: 'border-l-emerald',
+const levelAccent: Record<CourseLevel, string> = {
+  foundation: 'border-l-steel',
+  diploma: 'border-l-amber',
+  degree: 'border-l-emerald',
 };
 
-const subjectBadge: Record<Subject, string> = {
-  MLP: 'bg-steel/10 text-steel',
-  DL_GENAI: 'bg-amber/10 text-amber',
-  TDS: 'bg-emerald/10 text-emerald',
+const levelBadge: Record<CourseLevel, string> = {
+  foundation: 'bg-steel/10 text-steel',
+  diploma: 'bg-amber/10 text-amber',
+  degree: 'bg-emerald/10 text-emerald',
 };
 
 const Subjects = () => {
-  const { getSubjectItems, toggleComplete } = useDeadlines();
+  const { getSubjectItems, toggleComplete, selectedCourses } = useDeadlines();
+
+  const activeCourses = COURSE_CATALOG.filter(c => selectedCourses.includes(c.id));
+  const levels: CourseLevel[] = ['foundation', 'diploma', 'degree'];
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
       <div className="space-y-1">
         <h1 className="text-3xl font-bold tracking-tight">Subjects</h1>
-        <p className="text-sm text-muted-foreground">Track progress per course</p>
+        <p className="text-sm text-muted-foreground">Track progress per course — {activeCourses.length} courses selected</p>
       </div>
-      {(['MLP', 'DL_GENAI', 'TDS'] as Subject[]).map((subject, i) => (
-        <div key={subject} className={cn("animate-float-in", `stagger-${i + 1}`)}>
-          <SubjectCard subject={subject} items={getSubjectItems(subject)} onToggle={toggleComplete} />
-        </div>
-      ))}
+      {levels.map(level => {
+        const courses = activeCourses.filter(c => c.level === level);
+        if (courses.length === 0) return null;
+        return (
+          <div key={level} className="space-y-4">
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground capitalize">{level} Level</h2>
+            {courses.map((course, i) => (
+              <div key={course.id} className={cn("animate-float-in", `stagger-${(i % 4) + 1}`)}>
+                <SubjectCard
+                  subject={course.id}
+                  level={course.level}
+                  items={getSubjectItems(course.id)}
+                  onToggle={toggleComplete}
+                />
+              </div>
+            ))}
+          </div>
+        );
+      })}
+      {activeCourses.length === 0 && (
+        <Card className="glass-card">
+          <CardContent className="py-8 text-center text-muted-foreground">
+            No courses selected. Go to Settings to choose your courses.
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };
 
 function SubjectCard({
   subject,
+  level,
   items,
   onToggle,
 }: {
   subject: Subject;
+  level: CourseLevel;
   items: ReturnType<ReturnType<typeof useDeadlines>['getSubjectItems']>;
   onToggle: (id: string) => void;
 }) {
@@ -66,12 +92,12 @@ function SubjectCard({
   const risk = dueIn7 >= 3 ? 'red' : dueIn7 >= 2 ? 'yellow' : 'green';
 
   return (
-    <Card className={cn("glass-card border-l-4", subjectAccent[subject])}>
+    <Card className={cn("glass-card border-l-4", levelAccent[level])}>
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-lg">{SUBJECT_LABELS[subject]}</CardTitle>
+          <CardTitle className="text-lg">{SUBJECT_LABELS[subject] || subject}</CardTitle>
           <div className="flex items-center gap-2.5">
-            <Badge className={cn("text-[10px] font-medium", subjectBadge[subject])} variant="outline">
+            <Badge className={cn("text-[10px] font-medium", levelBadge[level])} variant="outline">
               {completed.length}/{total}
             </Badge>
             <div className={cn(

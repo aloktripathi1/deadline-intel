@@ -1,15 +1,24 @@
 import { useState, useCallback, useMemo } from 'react';
 import { ALL_DEADLINES } from '@/data/deadlines';
-import { DeadlineItem, DeadlineState, getDaysLeft, getUrgencyZone, Subject } from '@/types/deadline';
+import { DeadlineItem, DeadlineState, getDaysLeft, getUrgencyZone, Subject, COURSE_CATALOG } from '@/types/deadline';
 
 const STORAGE_KEY = 'deadline-intel-state';
+
+// Default: MLP, DL_GENAI, TDS (original 3)
+const DEFAULT_COURSES: Subject[] = ['MLP', 'DL_GENAI', 'TDS'];
 
 function loadState(): DeadlineState {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      return {
+        ...parsed,
+        selectedCourses: parsed.selectedCourses ?? DEFAULT_COURSES,
+      };
+    }
   } catch {}
-  return { completedIds: [], streak: 0, lastCompletionDate: null, theme: 'dark' };
+  return { completedIds: [], streak: 0, lastCompletionDate: null, theme: 'dark', selectedCourses: DEFAULT_COURSES };
 }
 
 function saveState(state: DeadlineState) {
@@ -38,10 +47,10 @@ export function useDeadlines() {
   }, []);
 
   const resetData = useCallback(() => {
-    const newState: DeadlineState = { completedIds: [], streak: 0, lastCompletionDate: null, theme: state.theme };
+    const newState: DeadlineState = { completedIds: [], streak: 0, lastCompletionDate: null, theme: state.theme, selectedCourses: state.selectedCourses };
     saveState(newState);
     setState(newState);
-  }, [state.theme]);
+  }, [state.theme, state.selectedCourses]);
 
   const setTheme = useCallback((theme: 'dark' | 'light') => {
     setState((prev) => {
@@ -51,14 +60,29 @@ export function useDeadlines() {
     });
   }, []);
 
+  const setSelectedCourses = useCallback((courses: Subject[]) => {
+    setState((prev) => {
+      const newState = { ...prev, selectedCourses: courses };
+      saveState(newState);
+      return newState;
+    });
+  }, []);
+
+  // Filter deadlines to only show selected courses + ALL
+  const filteredDeadlines = useMemo(() => {
+    return ALL_DEADLINES.filter(item =>
+      item.subject === 'ALL' || state.selectedCourses.includes(item.subject as Subject)
+    );
+  }, [state.selectedCourses]);
+
   const items = useMemo(() => {
-    return ALL_DEADLINES.map((item) => ({
+    return filteredDeadlines.map((item) => ({
       ...item,
       completed: state.completedIds.includes(item.id),
       daysLeft: getDaysLeft(item.date),
       urgency: getUrgencyZone(getDaysLeft(item.date)),
     }));
-  }, [state.completedIds]);
+  }, [state.completedIds, filteredDeadlines]);
 
   const pending = useMemo(() => items.filter((i) => !i.completed), [items]);
   const completed = useMemo(() => items.filter((i) => i.completed), [items]);
@@ -111,9 +135,11 @@ export function useDeadlines() {
     atRisk,
     streak: state.streak,
     theme: state.theme,
+    selectedCourses: state.selectedCourses,
     toggleComplete,
     resetData,
     setTheme,
+    setSelectedCourses,
     getSubjectItems,
   };
 }
