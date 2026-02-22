@@ -69,9 +69,11 @@ export function useDeadlines() {
   }, []);
 
   // Filter deadlines to only show selected courses + ALL
+  const selectedCourses = state.selectedCourses ?? DEFAULT_COURSES;
+
   const filteredDeadlines = useMemo(() => {
     return ALL_DEADLINES.filter(item =>
-      item.subject === 'ALL' || state.selectedCourses.includes(item.subject as Subject)
+      item.subject === 'ALL' || selectedCourses.includes(item.subject as Subject)
     );
   }, [state.selectedCourses]);
 
