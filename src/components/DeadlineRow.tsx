@@ -1,7 +1,7 @@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { DeadlineItem, getDaysLeft, getUrgencyZone, SUBJECT_LABELS, getPriorityLabel, Subject } from "@/types/deadline";
+import { DeadlineItem, getDaysLeft, getUrgencyZone, SUBJECT_LABELS, getPriorityLabel, Subject, getCourseLevel, CourseLevel } from "@/types/deadline";
 
 interface DeadlineRowProps {
   item: DeadlineItem & { completed: boolean; daysLeft: number };
@@ -9,17 +9,19 @@ interface DeadlineRowProps {
   showSubject?: boolean;
 }
 
-const subjectColorMap: Record<string, string> = {
-  MLP: 'bg-steel/10 text-steel border-steel/25',
-  DL_GENAI: 'bg-amber/10 text-amber border-amber/25',
-  TDS: 'bg-emerald/10 text-emerald border-emerald/25',
-  ALL: 'bg-muted text-muted-foreground border-border',
+const levelColorMap: Record<CourseLevel, string> = {
+  foundation: 'bg-steel/10 text-steel border-steel/25',
+  diploma: 'bg-amber/10 text-amber border-amber/25',
+  degree: 'bg-emerald/10 text-emerald border-emerald/25',
 };
 
 export function DeadlineRow({ item, onToggle, showSubject = true }: DeadlineRowProps) {
   const urgency = getUrgencyZone(item.daysLeft);
   const isOverdue = urgency === 'overdue';
   const isCritical = urgency === 'red' && item.daysLeft <= 3 && !item.completed;
+
+  const level = getCourseLevel(item.subject as Subject | 'ALL');
+  const badgeColor = level ? levelColorMap[level] : 'bg-muted text-muted-foreground border-border';
 
   return (
     <div
@@ -43,8 +45,8 @@ export function DeadlineRow({ item, onToggle, showSubject = true }: DeadlineRowP
             {item.title}
           </span>
           {showSubject && (
-            <Badge variant="outline" className={cn("text-xs px-2 py-0.5 h-5 shrink-0 font-medium", subjectColorMap[item.subject])}>
-              {SUBJECT_LABELS[item.subject as Subject | 'ALL']}
+            <Badge variant="outline" className={cn("text-xs px-2 py-0.5 h-5 shrink-0 font-medium", badgeColor)}>
+              {SUBJECT_LABELS[item.subject] || item.subject}
             </Badge>
           )}
         </div>
