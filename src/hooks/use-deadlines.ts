@@ -14,8 +14,8 @@ function loadState(): DeadlineState {
       const parsed = JSON.parse(raw);
       return {
         ...parsed,
-        selectedCourses: parsed.selectedCourses ?? DEFAULT_COURSES,
-        hasConfiguredCourses: parsed.hasConfiguredCourses ?? false,
+        selectedCourses: Array.isArray(parsed.selectedCourses) ? parsed.selectedCourses : DEFAULT_COURSES,
+        hasConfiguredCourses: parsed.hasConfiguredCourses === true,
       };
     }
   } catch {}
@@ -70,8 +70,8 @@ export function useDeadlines() {
   }, []);
 
   // Filter deadlines: show ALL courses for first-time users, otherwise selected courses
-  const selectedCourses = state.selectedCourses ?? DEFAULT_COURSES;
-  const hasConfiguredCourses = state.hasConfiguredCourses ?? false;
+  const selectedCourses = Array.isArray(state.selectedCourses) ? state.selectedCourses : DEFAULT_COURSES;
+  const hasConfiguredCourses = state.hasConfiguredCourses === true;
 
   const filteredDeadlines = useMemo(() => {
     if (!hasConfiguredCourses) return ALL_DEADLINES; // Show everything for first-time users
