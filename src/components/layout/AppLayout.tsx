@@ -3,11 +3,11 @@ import { AppSidebar } from "./AppSidebar";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 function MainContent({ children }: { children: React.ReactNode }) {
-  const { open } = useSidebar();
+  const { open, isMobile } = useSidebar();
   
   return (
     <main className="flex-1 overflow-auto p-6 md:p-8 relative">
-      {!open && (
+      {(isMobile || !open) && (
         <SidebarTrigger className="absolute top-4 left-4 z-50 h-8 w-8 rounded-md border border-border/50 bg-card/80 backdrop-blur-sm text-muted-foreground hover:text-foreground hover:bg-accent/60 transition-colors duration-200 flex items-center justify-center" />
       )}
       {children}
