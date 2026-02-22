@@ -4,14 +4,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { DeadlineRow } from "@/components/DeadlineRow";
 import { cn } from "@/lib/utils";
-import { AlertTriangle, TrendingUp, CheckCircle2, Flame, Zap, Clock, BookOpen, FolderGit2 } from "lucide-react";
+import { AlertTriangle, TrendingUp, CheckCircle2, Flame, Zap, Clock, BookOpen, FolderGit2, Settings2, X } from "lucide-react";
 import { SUBJECT_LABELS, Subject, DeadlineType } from "@/types/deadline";
+import { useNavigate } from "react-router-dom";
 
 const THEORY_TYPES: DeadlineType[] = ['ga', 'exam', 'oppe', 'roe'];
 const PROJECT_TYPES: DeadlineType[] = ['milestone', 'kaggle', 'kaggle_review', 'form', 'project'];
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState<'all' | 'theory' | 'projects'>('theory');
+
+  const [dismissedBanner, setDismissedBanner] = useState(false);
+  const navigate = useNavigate();
 
   const {
     items,
@@ -25,6 +29,7 @@ const Index = () => {
     atRisk,
     streak,
     toggleComplete,
+    hasConfiguredCourses,
   } = useDeadlines();
 
   // Filter helpers
@@ -46,6 +51,29 @@ const Index = () => {
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
+      {/* Course Configuration Banner */}
+      {!hasConfiguredCourses && !dismissedBanner && (
+        <div className="relative flex items-center gap-3 rounded-xl border border-primary/20 bg-primary/5 px-4 py-3 animate-float-in">
+          <Settings2 className="h-5 w-5 text-primary shrink-0" />
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-foreground">Select your courses for Jan 2026 Term</p>
+            <p className="text-xs text-muted-foreground">Currently showing deadlines for all courses. Configure your dashboard to only see what matters.</p>
+          </div>
+          <button
+            onClick={() => navigate('/settings')}
+            className="shrink-0 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-medium hover:bg-primary/90 transition-colors"
+          >
+            Select Courses
+          </button>
+          <button
+            onClick={() => setDismissedBanner(true)}
+            className="shrink-0 p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      )}
+
       {/* Page Title */}
       <div className="space-y-1">
         <h1 className="text-3xl font-bold tracking-tight">Jan 2026 — Deadlines</h1>

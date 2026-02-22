@@ -30,6 +30,7 @@ export interface DeadlineState {
   lastCompletionDate: string | null;
   theme: 'dark' | 'light';
   selectedCourses: Subject[];
+  hasConfiguredCourses: boolean;
 }
 
 export interface CourseInfo {

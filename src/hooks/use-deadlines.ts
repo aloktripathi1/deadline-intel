@@ -15,10 +15,11 @@ function loadState(): DeadlineState {
       return {
         ...parsed,
         selectedCourses: parsed.selectedCourses ?? DEFAULT_COURSES,
+        hasConfiguredCourses: parsed.hasConfiguredCourses ?? false,
       };
     }
   } catch {}
-  return { completedIds: [], streak: 0, lastCompletionDate: null, theme: 'dark', selectedCourses: DEFAULT_COURSES };
+  return { completedIds: [], streak: 0, lastCompletionDate: null, theme: 'dark', selectedCourses: DEFAULT_COURSES, hasConfiguredCourses: false };
 }
 
 function saveState(state: DeadlineState) {
@@ -47,10 +48,10 @@ export function useDeadlines() {
   }, []);
 
   const resetData = useCallback(() => {
-    const newState: DeadlineState = { completedIds: [], streak: 0, lastCompletionDate: null, theme: state.theme, selectedCourses: state.selectedCourses };
+    const newState: DeadlineState = { completedIds: [], streak: 0, lastCompletionDate: null, theme: state.theme, selectedCourses: state.selectedCourses, hasConfiguredCourses: state.hasConfiguredCourses };
     saveState(newState);
     setState(newState);
-  }, [state.theme, state.selectedCourses]);
+  }, [state.theme, state.selectedCourses, state.hasConfiguredCourses]);
 
   const setTheme = useCallback((theme: 'dark' | 'light') => {
     setState((prev) => {
@@ -62,20 +63,22 @@ export function useDeadlines() {
 
   const setSelectedCourses = useCallback((courses: Subject[]) => {
     setState((prev) => {
-      const newState = { ...prev, selectedCourses: courses };
+      const newState = { ...prev, selectedCourses: courses, hasConfiguredCourses: true };
       saveState(newState);
       return newState;
     });
   }, []);
 
-  // Filter deadlines to only show selected courses + ALL
+  // Filter deadlines: show ALL courses for first-time users, otherwise selected courses
   const selectedCourses = state.selectedCourses ?? DEFAULT_COURSES;
+  const hasConfiguredCourses = state.hasConfiguredCourses ?? false;
 
   const filteredDeadlines = useMemo(() => {
+    if (!hasConfiguredCourses) return ALL_DEADLINES; // Show everything for first-time users
     return ALL_DEADLINES.filter(item =>
       item.subject === 'ALL' || selectedCourses.includes(item.subject as Subject)
     );
-  }, [state.selectedCourses]);
+  }, [selectedCourses, hasConfiguredCourses]);
 
   const items = useMemo(() => {
     return filteredDeadlines.map((item) => ({
@@ -138,6 +141,7 @@ export function useDeadlines() {
     streak: state.streak,
     theme: state.theme,
     selectedCourses: state.selectedCourses,
+    hasConfiguredCourses: state.hasConfiguredCourses ?? false,
     toggleComplete,
     resetData,
     setTheme,
