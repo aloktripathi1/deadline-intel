@@ -1,6 +1,6 @@
 # Deadline Intel
 
-A deadline tracking application designed for IIT Madras BS students to help you manage and monitor your course deadlines effectively.
+A deadline-tracking application designed for IIT Madras BS students to help them manage and monitor course deadlines effectively.
 
 ## Getting Started
 
