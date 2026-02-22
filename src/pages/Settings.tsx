@@ -5,10 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
-import { BellOff, BellRing } from "lucide-react";
+import { BellOff, BellRing, Check } from "lucide-react";
 import { COURSE_CATALOG, CourseLevel, Subject } from "@/types/deadline";
+import { toast } from "@/components/ui/sonner";
 
 const LEAD_OPTIONS = [
   { label: '1 hour before', value: 1 },
@@ -27,7 +28,8 @@ const LEVEL_LABELS: Record<CourseLevel, string> = {
 const LEVEL_ORDER: CourseLevel[] = ['foundation', 'diploma', 'degree'];
 
 const Settings = () => {
-  const { theme, setTheme, resetData, streak, completionRate, pending, selectedCourses, setSelectedCourses } = useDeadlines();
+  const { theme, setTheme, resetData, streak, completionRate, pending, selectedCourses, setSelectedCourses, hasConfiguredCourses } = useDeadlines();
+  const [tempSelectedCourses, setTempSelectedCourses] = useState<Subject[]>(selectedCourses);
   const {
     notifEnabled,
     notifPermission,
@@ -40,24 +42,39 @@ const Settings = () => {
     document.documentElement.classList.toggle('dark', theme === 'dark');
   }, [theme]);
 
+  // Sync temp selection when actual selection changes
+  useEffect(() => {
+    setTempSelectedCourses(selectedCourses);
+  }, [selectedCourses]);
+
   const toggleCourse = (courseId: Subject) => {
-    if (selectedCourses.includes(courseId)) {
-      setSelectedCourses(selectedCourses.filter(c => c !== courseId));
+    if (tempSelectedCourses.includes(courseId)) {
+      setTempSelectedCourses(tempSelectedCourses.filter(c => c !== courseId));
     } else {
-      setSelectedCourses([...selectedCourses, courseId]);
+      setTempSelectedCourses([...tempSelectedCourses, courseId]);
     }
   };
 
   const selectAllInLevel = (level: CourseLevel) => {
     const levelCourses = COURSE_CATALOG.filter(c => c.level === level).map(c => c.id);
-    const allSelected = levelCourses.every(c => selectedCourses.includes(c));
+    const allSelected = levelCourses.every(c => tempSelectedCourses.includes(c));
     if (allSelected) {
-      setSelectedCourses(selectedCourses.filter(c => !levelCourses.includes(c)));
+      setTempSelectedCourses(tempSelectedCourses.filter(c => !levelCourses.includes(c)));
     } else {
-      const newCourses = new Set([...selectedCourses, ...levelCourses]);
-      setSelectedCourses(Array.from(newCourses) as Subject[]);
+      const newCourses = new Set([...tempSelectedCourses, ...levelCourses]);
+      setTempSelectedCourses(Array.from(newCourses) as Subject[]);
     }
   };
+
+  const handleSaveCourses = () => {
+    setSelectedCourses(tempSelectedCourses);
+    toast.success("Courses saved successfully!", {
+      description: `${tempSelectedCourses.length} ${tempSelectedCourses.length === 1 ? 'course' : 'courses'} selected`,
+      duration: 3000,
+    });
+  };
+
+  const hasUnsavedChanges = JSON.stringify(tempSelectedCourses.sort()) !== JSON.stringify(selectedCourses.sort());
 
   return (
     <div className="max-w-2xl mx-auto space-y-8">
@@ -75,8 +92,8 @@ const Settings = () => {
         <CardContent className="space-y-5">
           {LEVEL_ORDER.map(level => {
             const courses = COURSE_CATALOG.filter(c => c.level === level);
-            const allSelected = courses.every(c => selectedCourses.includes(c.id));
-            const someSelected = courses.some(c => selectedCourses.includes(c.id));
+            const allSelected = courses.every(c => tempSelectedCourses.includes(c.id));
+            const someSelected = courses.some(c => tempSelectedCourses.includes(c.id));
             return (
               <div key={level} className="space-y-2.5">
                 <div className="flex items-center gap-2">
@@ -90,7 +107,7 @@ const Settings = () => {
                   />
                   <span className="text-sm font-semibold">{LEVEL_LABELS[level]}</span>
                   <span className="text-[10px] text-muted-foreground">
-                    ({courses.filter(c => selectedCourses.includes(c.id)).length}/{courses.length})
+                    ({courses.filter(c => tempSelectedCourses.includes(c.id)).length}/{courses.length})
                   </span>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 pl-6">
@@ -99,13 +116,13 @@ const Settings = () => {
                       key={course.id}
                       className={cn(
                         "flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs cursor-pointer transition-all duration-150 border",
-                        selectedCourses.includes(course.id)
+                        tempSelectedCourses.includes(course.id)
                           ? "bg-foreground/5 border-foreground/15 text-foreground"
                           : "border-transparent text-muted-foreground hover:text-foreground hover:bg-accent/40"
                       )}
                     >
                       <Checkbox
-                        checked={selectedCourses.includes(course.id)}
+                        checked={tempSelectedCourses.includes(course.id)}
                         onCheckedChange={() => toggleCourse(course.id)}
                         className="h-3.5 w-3.5"
                       />
@@ -117,6 +134,29 @@ const Settings = () => {
               </div>
             );
           })}
+          
+          {/* Save Button */}
+          <div className="pt-3 border-t">
+            <Button
+              onClick={handleSaveCourses}
+              disabled={tempSelectedCourses.length === 0 || !hasUnsavedChanges}
+              className="w-full"
+              size="sm"
+            >
+              <Check className="mr-2 h-4 w-4" />
+              Save Course Selection
+            </Button>
+            {tempSelectedCourses.length === 0 && (
+              <p className="text-xs text-muted-foreground text-center mt-2">
+                Please select at least one course
+              </p>
+            )}
+            {!hasUnsavedChanges && tempSelectedCourses.length > 0 && (
+              <p className="text-xs text-muted-foreground text-center mt-2">
+                No changes to save
+              </p>
+            )}
+          </div>
         </CardContent>
       </Card>
 
