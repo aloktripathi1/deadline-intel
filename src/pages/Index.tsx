@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { DeadlineRow } from "@/components/DeadlineRow";
 import { cn } from "@/lib/utils";
-import { AlertTriangle, TrendingUp, CheckCircle2, Flame, Zap, Clock, BookOpen, FolderGit2, Settings2, X } from "lucide-react";
+import { AlertTriangle, TrendingUp, CheckCircle2, Flame, Zap, Clock, BookOpen, FolderGit2, Settings2, X, CalendarCheck } from "lucide-react";
 import { SUBJECT_LABELS, Subject, DeadlineType } from "@/types/deadline";
 import { useNavigate } from "react-router-dom";
 
@@ -24,6 +24,7 @@ const Index = () => {
     orangeZone,
     overdue,
     upcoming7,
+    todayDeadlines,
     completedThisWeek,
     completionRate,
     atRisk,
@@ -43,6 +44,7 @@ const Index = () => {
   const filteredRed = filterByCategory(redZone, activeTab);
   const filteredOrange = filterByCategory(orangeZone, activeTab);
   const filteredUpcoming = filterByCategory(upcoming7, activeTab);
+  const filteredToday = filterByCategory(todayDeadlines, activeTab);
 
   const tabs = [
     { key: 'theory' as const, label: 'Theory', icon: BookOpen },
@@ -177,6 +179,30 @@ const Index = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Today's Deadlines */}
+      <Card className="glass-card border-primary/20 bg-primary/[0.03]">
+        <CardHeader className="pb-3">
+          <CardTitle className="section-header text-primary">
+            <CalendarCheck className="h-4 w-4" />
+            Today&apos;s Deadlines
+            <span className="ml-auto text-[10px] font-normal text-muted-foreground uppercase tracking-widest">
+              {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+            </span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {filteredToday.length === 0 ? (
+            <p className="text-sm text-muted-foreground text-center py-4">No deadlines today.</p>
+          ) : (
+            <div className="space-y-1">
+              {filteredToday.map((item) => (
+                <DeadlineRow key={item.id} item={item} onToggle={toggleComplete} />
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Empty state for filtered view */}
       {filteredOverdue.length === 0 && filteredRed.length === 0 && filteredOrange.length === 0 && filteredUpcoming.length === 0 && (

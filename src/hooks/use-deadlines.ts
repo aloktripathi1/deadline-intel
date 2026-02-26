@@ -103,6 +103,11 @@ export function useDeadlines() {
   const overdue = useMemo(() => pending.filter((i) => i.urgency === 'overdue').sort((a, b) => a.daysLeft - b.daysLeft), [pending]);
   const upcoming7 = useMemo(() => pending.filter((i) => i.daysLeft >= 0 && i.daysLeft <= 7).sort((a, b) => a.daysLeft - b.daysLeft), [pending]);
 
+  const todayDeadlines = useMemo(() => {
+    const today = new Date().toISOString().split('T')[0];
+    return items.filter((i) => i.date === today).sort((a, b) => a.priority - b.priority);
+  }, [items]);
+
   const completedThisWeek = useMemo(() => {
     const now = new Date();
     const startOfWeek = new Date(now);
@@ -135,6 +140,7 @@ export function useDeadlines() {
     orangeZone,
     overdue,
     upcoming7,
+    todayDeadlines,
     completedThisWeek,
     completionRate,
     atRisk,
