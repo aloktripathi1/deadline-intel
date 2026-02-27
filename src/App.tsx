@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import Timeline from "./pages/Timeline";
 import Subjects from "./pages/Subjects";
 import Settings from "./pages/Settings";
+import About from "./pages/About";
 import NotFound from "./pages/NotFound";
 import { useEffect } from "react";
 
@@ -35,6 +36,7 @@ const App = () => (
             <Route path="/timeline" element={<Timeline />} />
             <Route path="/subjects" element={<Subjects />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/about" element={<About />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AppLayout>

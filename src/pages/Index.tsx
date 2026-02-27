@@ -1,24 +1,40 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { useDeadlines } from "@/hooks/use-deadlines";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import { DeadlineRow } from "@/components/DeadlineRow";
 import { cn } from "@/lib/utils";
-import { AlertTriangle, TrendingUp, CheckCircle2, Flame, Zap, Clock, BookOpen, FolderGit2, Settings2, X, CalendarCheck } from "lucide-react";
-import { SUBJECT_LABELS, Subject, DeadlineType } from "@/types/deadline";
-import { useNavigate } from "react-router-dom";
+import {
+  AlertTriangle, TrendingUp, CheckCircle2, Flame, Zap, Clock,
+  Settings2, CalendarCheck, ListTodo, Target, ChevronDown, ChevronUp,
+  BookOpen, FolderGit2,
+} from "lucide-react";
+import { SUBJECT_LABELS, Subject, getPriorityLabel, DeadlineType } from "@/types/deadline";
 
-const THEORY_TYPES: DeadlineType[] = ['ga', 'exam', 'oppe', 'roe'];
+const THEORY_TYPES: DeadlineType[] = ['ga', 'quiz', 'endterm', 'oppe', 'nppe', 'roe', 'bpt', 'extra_activity'];
 const PROJECT_TYPES: DeadlineType[] = ['milestone', 'kaggle', 'kaggle_review', 'form', 'project'];
 
-const Index = () => {
-  const [activeTab, setActiveTab] = useState<'all' | 'theory' | 'projects'>('theory');
+// Semester bounds: Jan 13 – May 10, 2026
+const TERM_START = new Date('2026-01-13');
+const TERM_END = new Date('2026-05-10');
 
-  const [dismissedBanner, setDismissedBanner] = useState(false);
+function termProgress() {
+  const now = new Date();
+  const total = TERM_END.getTime() - TERM_START.getTime();
+  const elapsed = Math.max(0, Math.min(now.getTime() - TERM_START.getTime(), total));
+  return Math.round((elapsed / total) * 100);
+}
+
+const Index = () => {
+  const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({});
+  const [activeFilter, setActiveFilter] = useState<'all' | 'theory' | 'projects'>('all');
   const navigate = useNavigate();
 
   const {
     items,
+    pending,
     nextCritical,
     redZone,
     orangeZone,
@@ -31,259 +47,358 @@ const Index = () => {
     streak,
     toggleComplete,
     hasConfiguredCourses,
+    selectedCourses,
   } = useDeadlines();
 
-  // Filter helpers
-  const filterByCategory = (arr: typeof items, cat: 'all' | 'theory' | 'projects') => {
-    if (cat === 'theory') return arr.filter(i => THEORY_TYPES.includes(i.type));
-    if (cat === 'projects') return arr.filter(i => PROJECT_TYPES.includes(i.type));
+  const toggleSection = (key: string) =>
+    setCollapsedSections(prev => ({ ...prev, [key]: !prev[key] }));
+
+  // Category filter helper
+  const applyFilter = <T extends { type: DeadlineType }>(arr: T[]) => {
+    if (activeFilter === 'theory') return arr.filter(i => THEORY_TYPES.includes(i.type));
+    if (activeFilter === 'projects') return arr.filter(i => PROJECT_TYPES.includes(i.type));
     return arr;
   };
 
-  const filteredOverdue = filterByCategory(overdue, activeTab);
-  const filteredRed = filterByCategory(redZone, activeTab);
-  const filteredOrange = filterByCategory(orangeZone, activeTab);
-  const filteredUpcoming = filterByCategory(upcoming7, activeTab);
-  const filteredToday = filterByCategory(todayDeadlines, activeTab);
+  // Group pending items beyond upcoming7 into "later"
+  const later = useMemo(() =>
+    pending.filter(i => i.daysLeft > 7).sort((a, b) => a.daysLeft - b.daysLeft),
+  [pending]);
 
-  const tabs = [
-    { key: 'theory' as const, label: 'Theory', icon: BookOpen },
-    { key: 'projects' as const, label: 'Projects', icon: FolderGit2 },
-  ];
+  const progress = termProgress();
+  const pendingCount = pending.length;
 
-  return (
-    <div className="max-w-4xl mx-auto space-y-8">
-      {/* Course Configuration Banner */}
-      {!hasConfiguredCourses && !dismissedBanner && (
-        <div className="relative flex items-center gap-3 rounded-xl border border-primary/20 bg-primary/5 px-4 py-3 animate-float-in">
-          <Settings2 className="h-5 w-5 text-primary shrink-0" />
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-foreground">Select your courses for Jan 2026 Term</p>
-            <p className="text-xs text-muted-foreground">Currently showing deadlines for all courses. Configure your dashboard to only see what matters.</p>
+  // ── Empty / Not configured ──────────────────────────────────────────────────
+  if (!hasConfiguredCourses) {
+    return (
+      <div className="max-w-4xl mx-auto">
+        <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6 text-center px-4">
+          <div className="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center">
+            <Target className="h-8 w-8 text-primary" />
+          </div>
+          <div className="space-y-2">
+            <h1 className="text-2xl font-bold tracking-tight">Welcome to Deadline Intel</h1>
+            <p className="text-muted-foreground max-w-sm">
+              Select your Jan 2026 courses to see your personalised deadline dashboard.
+            </p>
           </div>
           <button
             onClick={() => navigate('/settings')}
-            className="shrink-0 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-medium hover:bg-primary/90 transition-colors"
+            className="flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors"
           >
-            Select Courses
-          </button>
-          <button
-            onClick={() => setDismissedBanner(true)}
-            className="shrink-0 p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
-          >
-            <X className="h-3.5 w-3.5" />
+            <Settings2 className="h-4 w-4" />
+            Select Your Courses
           </button>
         </div>
-      )}
+      </div>
+    );
+  }
 
-      {/* Page Title */}
-      <div className="space-y-1">
-        <h1 className="text-3xl font-bold tracking-tight">Jan 2026 — Deadlines</h1>
-        <p className="text-sm text-muted-foreground">Your academic intelligence at a glance</p>
+  // ── Main dashboard ──────────────────────────────────────────────────────────
+  return (
+    <div className="max-w-4xl mx-auto space-y-6">
+
+      {/* Header */}
+      <div className="flex items-end justify-between">
+        <div className="space-y-1">
+          <p className="text-xs text-muted-foreground uppercase tracking-widest font-medium">Jan 2026 Term</p>
+          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+        </div>
+        <div className="text-right space-y-1">
+          <p className="text-xs text-muted-foreground">{selectedCourses.length} courses · {pendingCount} pending</p>
+          <p className="text-xs text-muted-foreground">
+            {new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+          </p>
+        </div>
       </div>
 
-      {/* Category Tabs */}
-      <div className="flex gap-1 p-1 rounded-xl bg-muted/40 border border-border/50 w-fit">
-        {tabs.map(({ key, label, icon: Icon }) => (
-          <button
-            key={key}
-            onClick={() => setActiveTab(key)}
-            className={cn(
-              "flex items-center gap-1.5 px-5 py-2 rounded-lg text-sm font-medium transition-all duration-200",
-              activeTab === key
-                ? "bg-card text-foreground shadow-sm border border-border/60"
-                : "text-muted-foreground hover:text-foreground"
-            )}
-          >
-            {Icon && <Icon className="h-3.5 w-3.5" />}
-            {label}
-          </button>
-        ))}
-      </div>
+      {/* Term Progress */}
+      <Card className="glass-card">
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Term Progress</span>
+            <span className="text-xs font-mono font-bold text-foreground">{progress}%</span>
+          </div>
+          <Progress value={progress} className="h-2" />
+          <div className="flex justify-between mt-1.5 text-[10px] text-muted-foreground/60">
+            <span>Jan 13</span>
+            <span>May 10</span>
+          </div>
+        </CardContent>
+      </Card>
 
-      {/* Hero Countdown */}
-      {nextCritical && (
-        <Card className={cn(
-          "overflow-hidden glass-card relative group",
-          nextCritical.daysLeft <= 3 && "border-destructive/30",
-          nextCritical.daysLeft <= 5 && nextCritical.daysLeft > 3 && "border-urgency-red/25",
-        )}>
-          <CardContent className="p-8 relative">
-            <div className="flex items-center justify-between">
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <Zap className="h-3.5 w-3.5 text-muted-foreground" />
-                  <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-medium">Next Critical</p>
-                </div>
-                <h2 className="text-2xl font-bold tracking-tight">{nextCritical.title}</h2>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Badge variant="outline" className="text-[10px] px-2 py-0 h-5">
-                    {SUBJECT_LABELS[nextCritical.subject as Subject | 'ALL']}
-                  </Badge>
-                  <span className="text-xs">
-                    {new Date(nextCritical.date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
-                  </span>
-                </div>
-              </div>
-              <div className="text-right">
-                <span className={cn(
-                  "text-7xl font-mono font-bold tabular-nums leading-none tracking-tighter",
-                  nextCritical.daysLeft <= 3 && "text-destructive",
-                  nextCritical.daysLeft <= 5 && nextCritical.daysLeft > 3 && "text-urgency-red",
-                  nextCritical.daysLeft <= 10 && nextCritical.daysLeft > 5 && "text-urgency-orange",
-                  nextCritical.daysLeft > 10 && "text-urgency-green",
-                )}>
-                  {nextCritical.daysLeft}
-                </span>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-widest mt-1">days left</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Stats Bar */}
+      {/* Stats Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {[
-          { icon: CheckCircle2, iconClass: "text-urgency-green", value: completedThisWeek, label: "Done this week", delay: "stagger-1" },
-          { icon: TrendingUp, iconClass: "text-steel", value: `${completionRate}%`, label: "Completion rate", delay: "stagger-2" },
-          { icon: Flame, iconClass: "text-amber", value: streak, label: "Day streak", delay: "stagger-3" },
-        ].map(({ icon: Icon, iconClass, value, label, delay }) => (
-          <Card key={label} className={cn("glass-card-hover animate-float-in", delay)}>
+          { icon: ListTodo, iconClass: "text-steel", bg: "bg-steel/10", value: pendingCount, label: "Pending" },
+          { icon: CheckCircle2, iconClass: "text-urgency-green", bg: "bg-urgency-green/10", value: completedThisWeek, label: "Done this week" },
+          { icon: TrendingUp, iconClass: "text-primary", bg: "bg-primary/10", value: `${completionRate}%`, label: "Completion" },
+          { icon: Flame, iconClass: "text-amber", bg: "bg-amber/10", value: streak, label: "Day streak" },
+        ].map(({ icon: Icon, iconClass, bg, value, label }, i) => (
+          <Card key={label} className={cn("glass-card-hover animate-float-in", `stagger-${i + 1}`)}>
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="h-8 w-8 rounded-lg flex items-center justify-center bg-muted/50">
+                <div className={cn("h-9 w-9 rounded-xl flex items-center justify-center shrink-0", bg)}>
                   <Icon className={cn("h-4 w-4", iconClass)} />
                 </div>
-                <div>
-                  <p className="stat-value">{value}</p>
-                  <p className="text-[10px] text-muted-foreground mt-0.5">{label}</p>
+                <div className="min-w-0">
+                  <p className="text-xl font-bold leading-none tabular-nums">{value}</p>
+                  <p className="text-[10px] text-muted-foreground mt-1 truncate">{label}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
         ))}
-        <Card className={cn("glass-card-hover animate-float-in stagger-4", atRisk && "border-urgency-red/20")}>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className={cn("h-8 w-8 rounded-lg flex items-center justify-center", atRisk ? "bg-destructive/10" : "bg-muted/50")}>
-                {atRisk ? <AlertTriangle className="h-4 w-4 text-urgency-red" /> : <Clock className="h-4 w-4 text-muted-foreground" />}
+      </div>
+
+      {/* Next Critical */}
+      {nextCritical && (
+        <Card className={cn(
+          "glass-card overflow-hidden",
+          nextCritical.daysLeft <= 3 && "border-destructive/30 bg-destructive/[0.02]",
+          nextCritical.daysLeft <= 5 && nextCritical.daysLeft > 3 && "border-urgency-red/25",
+          nextCritical.daysLeft <= 10 && nextCritical.daysLeft > 5 && "border-urgency-orange/20",
+        )}>
+          <CardContent className="p-6">
+            <div className="flex items-center gap-4">
+              <div className="flex-1 min-w-0 space-y-1.5">
+                <div className="flex items-center gap-1.5">
+                  <Zap className="h-3 w-3 text-muted-foreground shrink-0" />
+                  <span className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground font-medium">Next Critical</span>
+                </div>
+                <h2 className="text-xl font-bold tracking-tight leading-tight">{nextCritical.title}</h2>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Badge variant="outline" className="text-[10px] px-2 py-0 h-4.5">
+                    {SUBJECT_LABELS[nextCritical.subject as Subject | 'ALL']}
+                  </Badge>
+                  <Badge variant="outline" className="text-[10px] px-2 py-0 h-4.5 text-muted-foreground">
+                    {getPriorityLabel(nextCritical.type)}
+                  </Badge>
+                  <span className="text-[11px] text-muted-foreground">
+                    {new Date(nextCritical.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+                  </span>
+                </div>
+                {nextCritical.description && (
+                  <p className="text-[11px] text-muted-foreground/70 truncate">{nextCritical.description}</p>
+                )}
               </div>
-              <div>
-                <Badge variant={atRisk ? "destructive" : "secondary"} className="text-[10px] font-bold">
-                  {atRisk ? 'AT RISK' : 'ON TRACK'}
-                </Badge>
-                <p className="text-[10px] text-muted-foreground mt-0.5">7-day load</p>
+              <div className="text-right shrink-0">
+                <span className={cn(
+                  "text-6xl font-mono font-black tabular-nums leading-none",
+                  nextCritical.daysLeft === 0 && "text-destructive",
+                  nextCritical.daysLeft <= 3 && nextCritical.daysLeft > 0 && "text-destructive",
+                  nextCritical.daysLeft <= 5 && nextCritical.daysLeft > 3 && "text-urgency-red",
+                  nextCritical.daysLeft <= 10 && nextCritical.daysLeft > 5 && "text-urgency-orange",
+                  nextCritical.daysLeft > 10 && "text-urgency-green",
+                )}>
+                  {nextCritical.daysLeft === 0 ? "!" : nextCritical.daysLeft}
+                </span>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-widest mt-1">
+                  {nextCritical.daysLeft === 0 ? "due today" : "days left"}
+                </p>
               </div>
             </div>
           </CardContent>
         </Card>
+      )}
+
+      {/* Theory / Projects filter */}
+      <div className="flex justify-center">
+        <div className="inline-flex items-center gap-1 p-1 rounded-full bg-muted/50 border border-border/50">
+          {([
+            { key: 'all', label: 'All' },
+            { key: 'theory', label: 'Theory', icon: BookOpen },
+            { key: 'projects', label: 'Projects', icon: FolderGit2 },
+          ] as { key: 'all' | 'theory' | 'projects'; label: string; icon?: React.ElementType }[]).map(({ key, label, icon: Icon }) => (
+            <button
+              key={key}
+              onClick={() => setActiveFilter(key)}
+              className={cn(
+                "flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-200",
+                activeFilter === key
+                  ? "bg-background text-foreground shadow-sm border border-border/60"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              {Icon && <Icon className="h-3 w-3" />}
+              {label}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* Today's Deadlines */}
-      <Card className="glass-card border-primary/20 bg-primary/[0.03]">
-        <CardHeader className="pb-3">
-          <CardTitle className="section-header text-primary">
-            <CalendarCheck className="h-4 w-4" />
-            Today&apos;s Deadlines
-            <span className="ml-auto text-[10px] font-normal text-muted-foreground uppercase tracking-widest">
-              {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
-            </span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {filteredToday.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-4">No deadlines today.</p>
-          ) : (
-            <div className="space-y-1">
-              {filteredToday.map((item) => (
-                <DeadlineRow key={item.id} item={item} onToggle={toggleComplete} />
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      {/* Status pill row */}
+      <div className="flex items-center gap-2 flex-wrap">
+        {overdue.length > 0 && (
+          <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-destructive/10 border border-destructive/20 text-destructive text-xs font-semibold">
+            <AlertTriangle className="h-3 w-3" />
+            {overdue.length} overdue
+          </span>
+        )}
+        {redZone.length > 0 && (
+          <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-urgency-red/10 border border-urgency-red/20 text-urgency-red text-xs font-semibold">
+            <Clock className="h-3 w-3" />
+            {redZone.length} due in 5d
+          </span>
+        )}
+        {orangeZone.length > 0 && (
+          <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-urgency-orange/10 border border-urgency-orange/20 text-urgency-orange text-xs font-semibold">
+            <Clock className="h-3 w-3" />
+            {orangeZone.length} due in 10d
+          </span>
+        )}
+        {atRisk && (
+          <span className="ml-auto flex items-center gap-1.5 px-3 py-1 rounded-full bg-destructive/10 border border-destructive/20 text-destructive text-xs font-semibold">
+            <AlertTriangle className="h-3 w-3" /> At Risk
+          </span>
+        )}
+      </div>
 
-      {/* Empty state for filtered view */}
-      {filteredOverdue.length === 0 && filteredRed.length === 0 && filteredOrange.length === 0 && filteredUpcoming.length === 0 && (
-        <div className="text-center py-12 text-muted-foreground text-sm">
-          No pending deadlines in this category.
-        </div>
-      )}
+      {/* Today */}
+      {(() => { const f = applyFilter(todayDeadlines); return (
+      <CollapsibleSection
+        id="today"
+        title="Today"
+        icon={<CalendarCheck className="h-4 w-4 text-primary" />}
+        count={f.length}
+        titleClass="text-primary"
+        cardClass="border-primary/20 bg-primary/[0.02]"
+        collapsed={collapsedSections['today']}
+        onToggle={() => toggleSection('today')}
+        emptyText="Nothing due today — enjoy the breathing room."
+        items={f}
+        onItemToggle={toggleComplete}
+      />); })()}
 
       {/* Overdue */}
-      {filteredOverdue.length > 0 && (
-        <DeadlineSection
-          title={`Overdue (${filteredOverdue.length})`}
-          titleClass="text-destructive"
+      {(() => { const f = applyFilter(overdue); return f.length > 0 && (
+        <CollapsibleSection
+          id="overdue"
+          title="Overdue"
           icon={<AlertTriangle className="h-4 w-4" />}
-          cardClass="border-destructive/15 bg-destructive/[0.025]"
-          items={filteredOverdue}
-          onToggle={toggleComplete}
-        />
-      )}
+          count={f.length}
+          titleClass="text-destructive"
+          cardClass="border-destructive/15 bg-destructive/[0.02]"
+          collapsed={collapsedSections['overdue']}
+          onToggle={() => toggleSection('overdue')}
+          items={f}
+          onItemToggle={toggleComplete}
+        />); })()}
 
-      {/* Red Zone */}
-      {filteredRed.length > 0 && (
-        <DeadlineSection
-          title={`Due within 5 days (${filteredRed.length})`}
+      {/* Due within 5 days */}
+      {(() => { const f = applyFilter(redZone); return f.length > 0 && (
+        <CollapsibleSection
+          id="red"
+          title="Due within 5 days"
+          icon={<Clock className="h-4 w-4" />}
+          count={f.length}
           titleClass="text-urgency-red"
-          cardClass="border-urgency-red/10"
-          items={filteredRed}
-          onToggle={toggleComplete}
-        />
-      )}
+          cardClass="border-urgency-red/15"
+          collapsed={collapsedSections['red']}
+          onToggle={() => toggleSection('red')}
+          items={f}
+          onItemToggle={toggleComplete}
+        />); })()}
 
-      {/* Orange Zone */}
-      {filteredOrange.length > 0 && (
-        <DeadlineSection
-          title={`Due within 10 days (${filteredOrange.length})`}
+      {/* Due within 10 days */}
+      {(() => { const f = applyFilter(orangeZone); return f.length > 0 && (
+        <CollapsibleSection
+          id="orange"
+          title="Due within 10 days"
+          icon={<Clock className="h-4 w-4" />}
+          count={f.length}
           titleClass="text-urgency-orange"
-          items={filteredOrange}
-          onToggle={toggleComplete}
-        />
-      )}
+          cardClass="border-urgency-orange/15"
+          collapsed={collapsedSections['orange']}
+          onToggle={() => toggleSection('orange')}
+          items={f}
+          onItemToggle={toggleComplete}
+        />); })()}
 
-      {/* Upcoming 7 days */}
-      {filteredUpcoming.length > 0 && (
-        <DeadlineSection
-          title={`Upcoming 7 Days (${filteredUpcoming.length})`}
-          items={filteredUpcoming}
-          onToggle={toggleComplete}
-        />
+      {/* Coming up */}
+      {(() => { const f = applyFilter(later); return f.length > 0 && (
+        <CollapsibleSection
+          id="later"
+          title="Coming Up"
+          icon={<TrendingUp className="h-4 w-4 text-muted-foreground" />}
+          count={f.length}
+          collapsed={collapsedSections['later'] ?? true}
+          onToggle={() => toggleSection('later')}
+          items={f}
+          onItemToggle={toggleComplete}
+        />); })()}
+
+      {/* All clear */}
+      {pendingCount === 0 && (
+        <div className="flex flex-col items-center justify-center py-16 gap-3 text-center">
+          <div className="h-14 w-14 rounded-2xl bg-urgency-green/10 flex items-center justify-center">
+            <CheckCircle2 className="h-7 w-7 text-urgency-green" />
+          </div>
+          <p className="font-semibold text-foreground">All caught up!</p>
+          <p className="text-sm text-muted-foreground">No pending deadlines. Great work.</p>
+        </div>
       )}
     </div>
   );
 };
 
-function DeadlineSection({
+// ── Collapsible section component ────────────────────────────────────────────
+function CollapsibleSection({
+  id: _id,
   title,
-  titleClass,
   icon,
+  count,
+  titleClass,
   cardClass,
-  items,
+  collapsed,
   onToggle,
+  emptyText,
+  items,
+  onItemToggle,
 }: {
+  id: string;
   title: string;
-  titleClass?: string;
   icon?: React.ReactNode;
+  count: number;
+  titleClass?: string;
   cardClass?: string;
+  collapsed: boolean;
+  onToggle: () => void;
+  emptyText?: string;
   items: any[];
-  onToggle: (id: string) => void;
+  onItemToggle: (id: string) => void;
 }) {
   return (
-    <Card className={cn("glass-card", cardClass)}>
-      <CardHeader className="pb-3">
-        <CardTitle className={cn("section-header", titleClass)}>
-          {icon}
+    <Card className={cn("glass-card overflow-hidden", cardClass)}>
+      <button
+        onClick={onToggle}
+        className="w-full flex items-center gap-2 px-4 group"
+        style={{ height: '56px', minHeight: '56px', maxHeight: '56px', lineHeight: '1' }}
+      >
+        {icon && <span className={cn("shrink-0 flex items-center", titleClass)}>{icon}</span>}
+        <span className={cn("flex-1 text-left text-sm font-semibold leading-none truncate", titleClass)}>
           {title}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-1">
-        {items.map((item) => (
-          <DeadlineRow key={item.id} item={item} onToggle={onToggle} />
-        ))}
-      </CardContent>
+        </span>
+        <Badge variant="secondary" className="shrink-0 text-[10px] px-1.5 py-0 h-4 font-bold">
+          {count}
+        </Badge>
+        <span className="shrink-0 flex items-center text-muted-foreground group-hover:text-foreground transition-colors">
+          {collapsed ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
+        </span>
+      </button>
+      {!collapsed && (
+        <CardContent className="pt-2 pb-2 px-4">
+          {items.length === 0 ? (
+            <p className="text-sm text-muted-foreground text-center py-4">{emptyText ?? "Nothing here."}</p>
+          ) : (
+            <div className="space-y-0.5">
+              {items.map((item) => (
+                <DeadlineRow key={item.id} item={item} onToggle={onItemToggle} />
+              ))}
+            </div>
+          )}
+        </CardContent>
+      )}
     </Card>
   );
 }

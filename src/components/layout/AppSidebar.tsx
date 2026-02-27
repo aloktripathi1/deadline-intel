@@ -1,4 +1,4 @@
-import { LayoutDashboard, GanttChart, BookOpen, Settings, Sun, Moon } from "lucide-react";
+import { LayoutDashboard, GanttChart, BookOpen, Settings, Sun, Moon, Info } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useDeadlines } from "@/hooks/use-deadlines";
 import { useEffect } from "react";
@@ -19,6 +19,7 @@ const items = [
   { title: "Timeline", url: "/timeline", icon: GanttChart },
   { title: "Subjects", url: "/subjects", icon: BookOpen },
   { title: "Settings", url: "/settings", icon: Settings },
+  { title: "About", url: "/about", icon: Info },
 ];
 
 export function AppSidebar() {
