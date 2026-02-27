@@ -79,8 +79,16 @@ export function useDeadlines() {
     today.setHours(0, 0, 0, 0);
     return ALL_DEADLINES.filter(item => {
       if (item.subject !== 'ALL' && !selectedCourses.includes(item.subject as Subject)) return false;
-      return new Date(item.date) >= today; // hide past deadlines
+      return new Date(item.date) >= today; // hide past deadlines (dashboard only)
     });
+  }, [selectedCourses, hasConfiguredCourses]);
+
+  // All deadlines for selected courses including past — used by Subjects page
+  const allFilteredDeadlines = useMemo(() => {
+    if (!hasConfiguredCourses) return [];
+    return ALL_DEADLINES.filter(item =>
+      item.subject === 'ALL' || selectedCourses.includes(item.subject as Subject)
+    );
   }, [selectedCourses, hasConfiguredCourses]);
 
   const items = useMemo(() => {
@@ -91,6 +99,15 @@ export function useDeadlines() {
       urgency: getUrgencyZone(getDaysLeft(item.date)),
     }));
   }, [state.completedIds, filteredDeadlines]);
+
+  const allItems = useMemo(() => {
+    return allFilteredDeadlines.map((item) => ({
+      ...item,
+      completed: state.completedIds.includes(item.id),
+      daysLeft: getDaysLeft(item.date),
+      urgency: getUrgencyZone(getDaysLeft(item.date)),
+    }));
+  }, [state.completedIds, allFilteredDeadlines]);
 
   const pending = useMemo(() => items.filter((i) => !i.completed), [items]);
   const completed = useMemo(() => items.filter((i) => i.completed), [items]);
@@ -131,11 +148,12 @@ export function useDeadlines() {
   }, [pending]);
 
   const getSubjectItems = useCallback((subject: Subject) => {
-    return items.filter((i) => i.subject === subject || i.subject === 'ALL');
-  }, [items]);
+    return allItems.filter((i) => i.subject === subject || i.subject === 'ALL');
+  }, [allItems]);
 
   return {
     items,
+    allItems,
     pending,
     completed,
     nextCritical,
