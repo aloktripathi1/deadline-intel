@@ -8,7 +8,7 @@ import { DeadlineRow } from "@/components/DeadlineRow";
 import { cn } from "@/lib/utils";
 import {
   AlertTriangle, TrendingUp, CheckCircle2, Flame, Zap, Clock,
-  Settings2, CalendarCheck, ListTodo, Target, ChevronDown, ChevronUp,
+  Settings2, CalendarCheck, ListTodo, ChevronDown, ChevronUp,
   BookOpen, FolderGit2,
 } from "lucide-react";
 import { SUBJECT_LABELS, Subject, getPriorityLabel, DeadlineType } from "@/types/deadline";
@@ -73,9 +73,7 @@ const Index = () => {
     return (
       <div className="max-w-4xl mx-auto">
         <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6 text-center px-4">
-          <div className="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center">
-            <Target className="h-8 w-8 text-primary" />
-          </div>
+          <img src="/favicon.ico" alt="Deadline Intel" className="h-20 w-20" />
           <div className="space-y-2">
             <h1 className="text-2xl font-bold tracking-tight">Welcome to Deadline Intel</h1>
             <p className="text-muted-foreground max-w-sm">
