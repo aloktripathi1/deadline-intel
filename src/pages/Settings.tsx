@@ -6,6 +6,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { BellOff, BellRing, Check } from "lucide-react";
 import { COURSE_CATALOG, CourseLevel, Subject } from "@/types/deadline";
@@ -29,6 +30,7 @@ const LEVEL_ORDER: CourseLevel[] = ['foundation', 'diploma', 'degree'];
 
 const Settings = () => {
   const { theme, setTheme, resetData, streak, completionRate, pending, selectedCourses, setSelectedCourses, hasConfiguredCourses } = useDeadlines();
+  const navigate = useNavigate();
   const [tempSelectedCourses, setTempSelectedCourses] = useState<Subject[]>(selectedCourses);
   const {
     notifEnabled,
@@ -67,11 +69,15 @@ const Settings = () => {
   };
 
   const handleSaveCourses = () => {
+    const isFirstTime = !hasConfiguredCourses;
     setSelectedCourses(tempSelectedCourses);
     toast.success("Courses saved successfully!", {
       description: `${tempSelectedCourses.length} ${tempSelectedCourses.length === 1 ? 'course' : 'courses'} selected`,
       duration: 3000,
     });
+    if (isFirstTime) {
+      navigate('/');
+    }
   };
 
   const hasUnsavedChanges = JSON.stringify(tempSelectedCourses.sort()) !== JSON.stringify(selectedCourses.sort());
