@@ -75,9 +75,12 @@ export function useDeadlines() {
 
   const filteredDeadlines = useMemo(() => {
     if (!hasConfiguredCourses) return []; // Show nothing until user picks courses
-    return ALL_DEADLINES.filter(item =>
-      item.subject === 'ALL' || selectedCourses.includes(item.subject as Subject)
-    );
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return ALL_DEADLINES.filter(item => {
+      if (item.subject !== 'ALL' && !selectedCourses.includes(item.subject as Subject)) return false;
+      return new Date(item.date) >= today; // hide past deadlines
+    });
   }, [selectedCourses, hasConfiguredCourses]);
 
   const items = useMemo(() => {
