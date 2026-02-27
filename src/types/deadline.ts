@@ -10,7 +10,7 @@ export type Subject =
   // Degree
   | 'ST' | 'SE' | 'DL' | 'AI_SM' | 'SPG' | 'BIG_DATA' | 'C_PROG' | 'DL_CV' | 'LLM' | 'DLP' | 'INDUSTRY4' | 'OS' | 'RL' | 'CORP_FIN' | 'COMP_NET' | 'DS_AI_LAB' | 'APPDEV_LAB' | 'BIOINFO' | 'BIO_NET' | 'MKT_RES' | 'STAT_COMP' | 'ADV_ALGO' | 'MGRL_ECON' | 'SPEECH_TECH' | 'MLOPS' | 'MATH_GENAI' | 'TOC';
 
-export type DeadlineType = 'ga' | 'exam' | 'milestone' | 'oppe' | 'kaggle' | 'kaggle_review' | 'form' | 'project' | 'roe' | 'quiz' | 'endterm' | 'extra_activity' | 'bpt';
+export type DeadlineType = 'ga' | 'exam' | 'milestone' | 'oppe' | 'nppe' | 'kaggle' | 'kaggle_review' | 'form' | 'project' | 'roe' | 'quiz' | 'endterm' | 'extra_activity' | 'bpt';
 
 export type UrgencyZone = 'red' | 'orange' | 'green' | 'overdue';
 

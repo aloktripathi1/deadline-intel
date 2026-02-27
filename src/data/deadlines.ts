@@ -152,6 +152,8 @@ const dlGenaiItems: DeadlineItem[] = [
   { id: 'dlg-m4', title: 'Milestone 4 — Sequential Models', subject: 'DL_GENAI', type: 'milestone', date: '2026-03-11', priority: 3, description: 'RNN/LSTM/GRU' },
   { id: 'dlg-m5', title: 'Milestone 5 — Transformers', subject: 'DL_GENAI', type: 'milestone', date: '2026-03-18', priority: 3, description: 'BERT/RoBERTa fine-tuning' },
   { id: 'dlg-final', title: 'Final Submission & Presentation', subject: 'DL_GENAI', type: 'project', date: '2026-03-18', priority: 2, description: 'Final Kaggle submission, report, presentation' },
+  { id: 'dlg-nppe1', title: 'NPPE 1', subject: 'DL_GENAI', type: 'nppe', date: '2026-03-20', priority: 1, description: 'Mar 20 – Mar 23' },
+  { id: 'dlg-nppe2', title: 'NPPE 2', subject: 'DL_GENAI', type: 'nppe', date: '2026-04-17', priority: 1, description: 'Apr 17 – Apr 20' },
 ];
 
 // ── MLP Project milestones ──

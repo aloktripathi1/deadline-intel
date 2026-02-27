@@ -5,7 +5,7 @@ import { DeadlineItem, DeadlineState, getDaysLeft, getUrgencyZone, Subject, COUR
 const STORAGE_KEY = 'deadline-intel-state';
 
 // Default: MLP, DL_GENAI, TDS (original 3)
-const DEFAULT_COURSES: Subject[] = ['MLP', 'DL_GENAI', 'TDS'];
+const DEFAULT_COURSES: Subject[] = [];
 
 function loadState(): DeadlineState {
   try {
@@ -74,7 +74,7 @@ export function useDeadlines() {
   const hasConfiguredCourses = state.hasConfiguredCourses === true;
 
   const filteredDeadlines = useMemo(() => {
-    if (!hasConfiguredCourses) return ALL_DEADLINES; // Show everything for first-time users
+    if (!hasConfiguredCourses) return []; // Show nothing until user picks courses
     return ALL_DEADLINES.filter(item =>
       item.subject === 'ALL' || selectedCourses.includes(item.subject as Subject)
     );
