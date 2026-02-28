@@ -37,8 +37,8 @@ export function AppSidebar() {
         {/* Logo */}
         <div className="px-4 pb-6">
           <div className="flex items-center gap-2">
-            <div className="h-7 w-7 rounded-lg bg-foreground flex items-center justify-center shrink-0">
-              <span className="text-xs font-bold text-background font-mono">DI</span>
+            <div className="h-7 w-7 rounded-lg overflow-hidden shrink-0">
+              <img src="/favicon.ico" alt="Deadline Intel" className="h-full w-full object-contain" />
             </div>
             <div>
               <h1 className="text-sm font-bold tracking-tight text-foreground font-display">
