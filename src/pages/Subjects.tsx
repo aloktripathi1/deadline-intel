@@ -1,4 +1,5 @@
 import { useDeadlines } from "@/hooks/use-deadlines";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
@@ -22,10 +23,30 @@ const levelBadge: Record<CourseLevel, string> = {
 };
 
 const Subjects = () => {
-  const { getSubjectItems, toggleComplete, selectedCourses } = useDeadlines();
+  const { getSubjectItems, toggleComplete, selectedCourses, hasConfiguredCourses } = useDeadlines();
+  const navigate = useNavigate();
 
   const activeCourses = COURSE_CATALOG.filter(c => selectedCourses.includes(c.id));
   const levels: CourseLevel[] = ['foundation', 'diploma', 'degree'];
+
+  if (!hasConfiguredCourses) {
+    return (
+      <div className="max-w-4xl mx-auto flex flex-col items-center justify-center min-h-[60vh] gap-6 text-center px-4">
+        <div className="space-y-2">
+          <h1 className="text-2xl font-bold tracking-tight">No courses selected</h1>
+          <p className="text-muted-foreground max-w-sm">
+            Go to Settings to choose your Jan 2026 courses.
+          </p>
+        </div>
+        <button
+          onClick={() => navigate('/settings')}
+          className="flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors"
+        >
+          Select Your Courses
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
@@ -52,13 +73,7 @@ const Subjects = () => {
           </div>
         );
       })}
-      {activeCourses.length === 0 && (
-        <Card className="glass-card">
-          <CardContent className="py-8 text-center text-muted-foreground">
-            No courses selected. Go to Settings to choose your courses.
-          </CardContent>
-        </Card>
-      )}
+
     </div>
   );
 };
@@ -111,6 +126,10 @@ function SubjectCard({
         <Progress value={pct} className="h-1 mt-2" />
       </CardHeader>
       <CardContent className="space-y-3">
+        {upcoming.length === 0 && completed.length === 0 && (
+          <p className="text-xs text-muted-foreground py-2">No upcoming deadlines</p>
+        )}
+
         {upcoming.length > 0 && (
           <div className="space-y-1">
             <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5">Upcoming</p>

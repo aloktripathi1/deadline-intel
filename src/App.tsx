@@ -5,6 +5,7 @@ import { Analytics } from "@vercel/analytics/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import Index from "./pages/Index";
 import Timeline from "./pages/Timeline";
 import Subjects from "./pages/Subjects";
@@ -33,14 +34,16 @@ const App = () => (
       <Analytics />
       <BrowserRouter>
         <AppLayout>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/timeline" element={<Timeline />} />
-            <Route path="/subjects" element={<Subjects />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/about" element={<About />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <ErrorBoundary>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/timeline" element={<Timeline />} />
+              <Route path="/subjects" element={<Subjects />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/about" element={<About />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </ErrorBoundary>
         </AppLayout>
       </BrowserRouter>
     </TooltipProvider>
