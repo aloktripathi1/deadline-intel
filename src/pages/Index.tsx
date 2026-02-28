@@ -44,7 +44,6 @@ const Index = () => {
     completedThisWeek,
     completionRate,
     atRisk,
-    streak,
     toggleComplete,
     hasConfiguredCourses,
     selectedCourses,
@@ -52,6 +51,21 @@ const Index = () => {
 
   const toggleSection = (key: string) =>
     setCollapsedSections(prev => ({ ...prev, [key]: !prev[key] }));
+
+  const nextExam = (() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const exams = [
+      { label: 'Quiz 1', date: new Date('2026-03-15') },
+      { label: 'Quiz 2', date: new Date('2026-04-12') },
+      { label: 'End Term', date: new Date('2026-05-10') },
+    ];
+    for (const exam of exams) {
+      const diff = Math.ceil((exam.date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+      if (diff >= 0) return { label: exam.label, days: diff };
+    }
+    return null;
+  })();
 
   // Category filter helper
   const applyFilter = <T extends { type: DeadlineType }>(arr: T[]) => {
@@ -131,7 +145,7 @@ const Index = () => {
           { icon: ListTodo, iconClass: "text-steel", bg: "bg-steel/10", value: pendingCount, label: "Pending" },
           { icon: CheckCircle2, iconClass: "text-urgency-green", bg: "bg-urgency-green/10", value: completedThisWeek, label: "Done this week" },
           { icon: TrendingUp, iconClass: "text-primary", bg: "bg-primary/10", value: `${completionRate}%`, label: "Completion" },
-          { icon: Flame, iconClass: "text-amber", bg: "bg-amber/10", value: streak, label: "Day streak" },
+          { icon: Flame, iconClass: "text-amber", bg: "bg-amber/10", value: nextExam ? nextExam.days : '—', label: nextExam ? `Days to ${nextExam.label}` : 'Term over' },
         ].map(({ icon: Icon, iconClass, bg, value, label }, i) => (
           <Card key={label} className={cn("glass-card-hover animate-float-in", `stagger-${i + 1}`)}>
             <CardContent className="p-4">
