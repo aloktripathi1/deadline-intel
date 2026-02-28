@@ -141,19 +141,23 @@ const maths2Extra: DeadlineItem[] = [
   { id: 'maths2-ea3', title: 'Extra Activity 3', subject: 'MATHS2', type: 'extra_activity', date: '2026-04-17', priority: 4 },
 ];
 
-// ── DL GenAI Theory specific ──
-const dlGenaiItems: DeadlineItem[] = [
-  { id: 'dlg-form1', title: 'Registration Form', subject: 'DL_GENAI', type: 'form', date: '2026-02-17', priority: 3 },
-  { id: 'dlg-form3', title: 'Deployment Link', subject: 'DL_GENAI', type: 'form', date: '2026-03-12', priority: 3 },
-  { id: 'dlg-form2', title: 'Report Submission', subject: 'DL_GENAI', type: 'form', date: '2026-03-30', priority: 3 },
-  { id: 'dlg-m1', title: 'Milestone 1 — EDA & Baseline', subject: 'DL_GENAI', type: 'milestone', date: '2026-02-18', priority: 3, description: 'EDA, rule-based baseline, Kaggle submission' },
-  { id: 'dlg-m2', title: 'Milestone 2 — Classical ML', subject: 'DL_GENAI', type: 'milestone', date: '2026-02-25', priority: 3, description: 'BoW/TF-IDF, classical models' },
-  { id: 'dlg-m3', title: 'Milestone 3 — First Neural Network', subject: 'DL_GENAI', type: 'milestone', date: '2026-03-04', priority: 3, description: 'PyTorch basics, simple NN' },
-  { id: 'dlg-m4', title: 'Milestone 4 — Sequential Models', subject: 'DL_GENAI', type: 'milestone', date: '2026-03-11', priority: 3, description: 'RNN/LSTM/GRU' },
-  { id: 'dlg-m5', title: 'Milestone 5 — Transformers', subject: 'DL_GENAI', type: 'milestone', date: '2026-03-18', priority: 3, description: 'BERT/RoBERTa fine-tuning' },
-  { id: 'dlg-final', title: 'Final Submission & Presentation', subject: 'DL_GENAI', type: 'project', date: '2026-03-18', priority: 2, description: 'Final Kaggle submission, report, presentation' },
+// ── DL GenAI Theory specific (NPPE only) ──
+const dlGenaiTheoryItems: DeadlineItem[] = [
   { id: 'dlg-nppe1', title: 'NPPE 1', subject: 'DL_GENAI', type: 'nppe', date: '2026-03-20', priority: 1, description: 'Mar 20 – Mar 23' },
   { id: 'dlg-nppe2', title: 'NPPE 2', subject: 'DL_GENAI', type: 'nppe', date: '2026-04-17', priority: 1, description: 'Apr 17 – Apr 20' },
+];
+
+// ── DL GenAI Project specific (milestones, forms, final submission) ──
+const dlGenaiProjItems: DeadlineItem[] = [
+  { id: 'dlg-form1', title: 'Registration Form', subject: 'DL_GENAI_PROJ', type: 'form', date: '2026-02-17', priority: 3 },
+  { id: 'dlg-form3', title: 'Deployment Link', subject: 'DL_GENAI_PROJ', type: 'form', date: '2026-03-12', priority: 3 },
+  { id: 'dlg-form2', title: 'Report Submission', subject: 'DL_GENAI_PROJ', type: 'form', date: '2026-03-30', priority: 3 },
+  { id: 'dlg-m1', title: 'Milestone 1 — EDA & Baseline', subject: 'DL_GENAI_PROJ', type: 'milestone', date: '2026-02-18', priority: 3, description: 'EDA, rule-based baseline, Kaggle submission' },
+  { id: 'dlg-m2', title: 'Milestone 2 — Classical ML', subject: 'DL_GENAI_PROJ', type: 'milestone', date: '2026-02-25', priority: 3, description: 'BoW/TF-IDF, classical models' },
+  { id: 'dlg-m3', title: 'Milestone 3 — First Neural Network', subject: 'DL_GENAI_PROJ', type: 'milestone', date: '2026-03-04', priority: 3, description: 'PyTorch basics, simple NN' },
+  { id: 'dlg-m4', title: 'Milestone 4 — Sequential Models', subject: 'DL_GENAI_PROJ', type: 'milestone', date: '2026-03-11', priority: 3, description: 'RNN/LSTM/GRU' },
+  { id: 'dlg-m5', title: 'Milestone 5 — Transformers', subject: 'DL_GENAI_PROJ', type: 'milestone', date: '2026-03-18', priority: 3, description: 'BERT/RoBERTa fine-tuning' },
+  { id: 'dlg-final', title: 'Final Submission & Presentation', subject: 'DL_GENAI_PROJ', type: 'project', date: '2026-03-18', priority: 2, description: 'Final Kaggle submission, report, presentation' },
 ];
 
 // ── MLP Project milestones ──
@@ -205,7 +209,8 @@ export const ALL_DEADLINES: DeadlineItem[] = [
   ...stats1Extra,
   ...stats2Extra,
   ...maths2Extra,
-  ...dlGenaiItems,
+  ...dlGenaiTheoryItems,
+  ...dlGenaiProjItems,
   ...mlpProjItems,
   ...mad1ProjItems,
   ...mad2ProjItems,

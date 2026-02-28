@@ -148,7 +148,21 @@ export function useDeadlines() {
   }, [pending]);
 
   const getSubjectItems = useCallback((subject: Subject) => {
-    return allItems.filter((i) => i.subject === subject || i.subject === 'ALL');
+    const course = COURSE_CATALOG.find(c => c.id === subject);
+    return allItems.filter((i) => {
+      if (i.subject === subject) return true;
+      if (i.subject === 'ALL') {
+        // Don't show common exams for project courses
+        if (course?.isProject) return false;
+        // Respect per-course quiz flags
+        if (i.type === 'quiz') {
+          if (i.id === 'exam-quiz1' && !course?.hasQuiz1) return false;
+          if (i.id === 'exam-quiz2' && !course?.hasQuiz2) return false;
+        }
+        return true;
+      }
+      return false;
+    });
   }, [allItems]);
 
   return {
