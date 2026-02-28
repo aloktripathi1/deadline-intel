@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 const PROJECTS = [
   {
     name: "GradeGenie",
-    desc: "AI-powered grade predictor and academic planner for IITM BS students.",
+    desc: "A precise grade calculator built by an IITM BS student for fellow students.",
     url: "https://github.com/aloktripathi1/gradegenie",
   },
   {

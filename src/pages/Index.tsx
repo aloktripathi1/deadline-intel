@@ -73,7 +73,7 @@ const Index = () => {
     return (
       <div className="max-w-4xl mx-auto">
         <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6 text-center px-4">
-          <img src="/favicon.ico" alt="Deadline Intel" className="h-20 w-20" />
+          <img src="/favicon1.ico" alt="Deadline Intel" className="h-40 w-40" />
           <div className="space-y-2">
             <h1 className="text-2xl font-bold tracking-tight">Welcome to Deadline Intel</h1>
             <p className="text-muted-foreground max-w-sm">
