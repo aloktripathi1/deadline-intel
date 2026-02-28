@@ -83,11 +83,23 @@ export function useNotifications(pendingItems: DeadlineItem[]) {
       else if (daysLeft === 1) body = 'Due tomorrow!';
       else body = `Due in ${daysLeft} day(s)`;
 
-      new Notification(`📌 ${item.title}`, {
+      const notifOptions: NotificationOptions = {
         body,
         icon: '/favicon.ico',
         tag: item.id,
-      });
+      };
+      const title = `📌 ${item.title}`;
+      try {
+        new Notification(title, notifOptions);
+      } catch {
+        // Some contexts (e.g. iOS PWA) forbid the Notification constructor;
+        // fall back to ServiceWorker notification if available.
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.ready
+            .then((reg) => reg.showNotification(title, notifOptions))
+            .catch(() => {/* silently ignore if SW not available */});
+        }
+      }
 
       newLastNotified[item.id] = today;
       changed = true;
