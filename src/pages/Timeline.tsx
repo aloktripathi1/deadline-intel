@@ -3,6 +3,7 @@ import { useDeadlines } from "@/hooks/use-deadlines";
 import { cn } from "@/lib/utils";
 import { SUBJECT_LABELS, Subject, COURSE_CATALOG } from "@/types/deadline";
 import { Badge } from "@/components/ui/badge";
+import { AddCustomDeadlineDialog } from "@/components/AddCustomDeadlineDialog";
 
 const MONTHS = [
   { label: 'Feb', start: '2026-02-01', end: '2026-02-28' },
@@ -34,7 +35,7 @@ function dateToDayOffset(dateStr: string): number {
 }
 
 const Timeline = () => {
-  const { allItems, selectedCourses, hasConfiguredCourses } = useDeadlines();
+  const { allItems, selectedCourses, hasConfiguredCourses, addCustomDeadline, customDeadlines } = useDeadlines();
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Only non-project courses get a dedicated visual lane
@@ -43,9 +44,21 @@ const Timeline = () => {
     [selectedCourses],
   );
 
+  // Whether we have any custom deadlines in this timeline window
+  const hasCustomInWindow = useMemo(
+    () => customDeadlines.some(d => {
+      const date = new Date(d.date);
+      return date >= new Date(TIMELINE_START) && date <= new Date(TIMELINE_END);
+    }),
+    [customDeadlines],
+  );
+
+  // Index of the custom lane (after all course lanes)
+  const customLaneIdx = laneCourses.length;
+
   // Build subject → tailwind colour lookup from lane order
   const subjectColorMap = useMemo(() => {
-    const map: Record<string, string> = { ALL: 'bg-foreground' };
+    const map: Record<string, string> = { ALL: 'bg-foreground', CUSTOM: 'bg-violet-400' };
     laneCourses.forEach((s, i) => { map[s] = LANE_COLORS[i % LANE_COLORS.length]; });
     return map;
   }, [laneCourses]);
@@ -100,13 +113,17 @@ const Timeline = () => {
     );
   }
 
-  const laneHeight = Math.max(320, 80 + laneCourses.length * 70);
+  const totalLanes = laneCourses.length + (hasCustomInWindow ? 1 : 0);
+  const laneHeight = Math.max(320, 80 + totalLanes * 70);
 
   return (
     <div className="space-y-8">
-      <div className="space-y-1">
-        <h1 className="text-3xl font-bold tracking-tight">Academic Timeline</h1>
-        <p className="text-sm text-muted-foreground">February — May 2026 · Scroll horizontally to explore</p>
+      <div className="flex items-start justify-between gap-4">
+        <div className="space-y-1">
+          <h1 className="text-3xl font-bold tracking-tight">Academic Timeline</h1>
+          <p className="text-sm text-muted-foreground">February — May 2026 · Scroll horizontally to explore</p>
+        </div>
+        <AddCustomDeadlineDialog onAdd={addCustomDeadline} />
       </div>
 
       <div ref={scrollRef} className="overflow-x-auto pb-4 glass-card rounded-xl p-4">
@@ -159,29 +176,38 @@ const Timeline = () => {
             );
           })}
 
-          {/* Events (GAs, milestones, OPPEs, etc.) */}
+          {/* Events (GAs, milestones, OPPEs, custom, etc.) */}
           {events.map((item) => {
-            // ALL-subject items anchor to the first lane
-            const laneIdx = item.subject === 'ALL'
-              ? 0
-              : laneCourses.indexOf(item.subject as Subject);
+            // Custom deadlines go to their own lane
+            let laneIdx: number;
+            if (item.isCustom) {
+              if (!hasCustomInWindow) return null;
+              laneIdx = customLaneIdx;
+            } else if (item.subject === 'ALL') {
+              laneIdx = 0;
+            } else {
+              laneIdx = laneCourses.indexOf(item.subject as Subject);
+            }
 
             if (laneIdx === -1) return null; // not in this user's selection
 
             const offset     = dateToDayOffset(item.date);
-            const typeOffset = item.type === 'ga' ? 0 : item.type === 'milestone' ? 16 : 32;
+            const typeOffset = item.isCustom ? 16 : item.type === 'ga' ? 0 : item.type === 'milestone' ? 16 : 32;
 
             return (
               <div
                 key={item.id}
                 className={cn(
                   "absolute rounded-full z-20 cursor-default transition-transform duration-200 hover:scale-150",
-                  item.type === 'ga' ? "h-2.5 w-2.5" : "h-3.5 w-3.5",
-                  subjectColorMap[item.subject] ?? 'bg-muted-foreground',
+                  item.isCustom ? "h-3.5 w-3.5 bg-violet-400 ring-2 ring-violet-400/30" : item.type === 'ga' ? "h-2.5 w-2.5" : "h-3.5 w-3.5",
+                  !item.isCustom && (subjectColorMap[item.subject] ?? 'bg-muted-foreground'),
                   item.completed && "opacity-25",
                 )}
                 style={{ left: `${offset * 12 - 5}px`, top: `${60 + laneIdx * 70 + typeOffset}px` }}
-                title={`${item.title} — ${SUBJECT_LABELS[item.subject as Subject | 'ALL'] ?? item.subject} — ${new Date(item.date).toLocaleDateString()}`}
+                title={item.isCustom
+                  ? `[Custom] ${item.title} — ${new Date(item.date).toLocaleDateString()}`
+                  : `${item.title} — ${SUBJECT_LABELS[item.subject as Subject | 'ALL'] ?? item.subject} — ${new Date(item.date).toLocaleDateString()}`
+                }
               />
             );
           })}
@@ -196,6 +222,15 @@ const Timeline = () => {
               {SUBJECT_LABELS[subject] ?? subject}
             </div>
           ))}
+          {/* Custom lane label */}
+          {hasCustomInWindow && (
+            <div
+              className="absolute left-0 text-[10px] font-medium text-violet-400/80"
+              style={{ top: `${60 + customLaneIdx * 70 - 12}px` }}
+            >
+              Custom
+            </div>
+          )}
         </div>
       </div>
 
@@ -207,6 +242,12 @@ const Timeline = () => {
             {SUBJECT_LABELS[subject] ?? subject}
           </div>
         ))}
+        {hasCustomInWindow && (
+          <div className="flex items-center gap-1.5 text-violet-400 font-medium">
+            <div className="h-3 w-3 rounded-full bg-violet-400" />
+            Custom
+          </div>
+        )}
         <div className="flex items-center gap-1.5">
           <div className="h-3 w-3 rounded-full bg-muted-foreground/20" />
           Milestone / OPPE

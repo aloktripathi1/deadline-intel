@@ -10,7 +10,7 @@ export type Subject =
   // Degree
   | 'ST' | 'SE' | 'DL' | 'AI_SM' | 'SPG' | 'BIG_DATA' | 'C_PROG' | 'DL_CV' | 'LLM' | 'DLP' | 'INDUSTRY4' | 'OS' | 'RL' | 'CORP_FIN' | 'COMP_NET' | 'DS_AI_LAB' | 'APPDEV_LAB' | 'BIOINFO' | 'BIO_NET' | 'MKT_RES' | 'STAT_COMP' | 'ADV_ALGO' | 'MGRL_ECON' | 'SPEECH_TECH' | 'MLOPS' | 'MATH_GENAI' | 'TOC';
 
-export type DeadlineType = 'ga' | 'exam' | 'milestone' | 'oppe' | 'nppe' | 'kaggle' | 'kaggle_review' | 'form' | 'project' | 'roe' | 'quiz' | 'endterm' | 'extra_activity' | 'bpt';
+export type DeadlineType = 'ga' | 'exam' | 'milestone' | 'oppe' | 'nppe' | 'kaggle' | 'kaggle_review' | 'form' | 'project' | 'roe' | 'quiz' | 'endterm' | 'extra_activity' | 'bpt' | 'custom';
 
 export type UrgencyZone = 'red' | 'orange' | 'green' | 'overdue';
 
@@ -22,6 +22,7 @@ export interface DeadlineItem {
   date: string; // ISO date string
   description?: string;
   priority: number; // 1=highest (exams), 5=lowest (GAs)
+  isCustom?: boolean; // true for user-added custom deadlines
 }
 
 export interface DeadlineState {
@@ -157,6 +158,7 @@ export function getPriorityLabel(type: DeadlineType): string {
     case 'ga': return 'Graded Assignment';
     case 'extra_activity': return 'Extra Activity';
     case 'bpt': return 'BPT';
+    case 'custom': return 'Custom';
     default: return 'Task';
   }
 }

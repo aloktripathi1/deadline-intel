@@ -5,11 +5,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { DeadlineRow } from "@/components/DeadlineRow";
+import { AddCustomDeadlineDialog } from "@/components/AddCustomDeadlineDialog";
 import { cn } from "@/lib/utils";
 import {
   AlertTriangle, TrendingUp, CheckCircle2, Flame, Zap, Clock,
   Settings2, CalendarCheck, ListTodo, ChevronDown, ChevronUp,
-  BookOpen, FolderGit2,
+  BookOpen, FolderGit2, StickyNote,
 } from "lucide-react";
 import { SUBJECT_LABELS, Subject, getPriorityLabel, DeadlineType } from "@/types/deadline";
 
@@ -47,6 +48,9 @@ const Index = () => {
     toggleComplete,
     hasConfiguredCourses,
     selectedCourses,
+    customDeadlines,
+    addCustomDeadline,
+    deleteCustomDeadline,
   } = useDeadlines();
 
   const toggleSection = (key: string) =>
@@ -106,6 +110,12 @@ const Index = () => {
     );
   }
 
+  // Pending custom deadlines (upcoming) for dedicated section
+  const pendingCustom = useMemo(() =>
+    items.filter(i => i.isCustom && !i.completed && i.daysLeft >= 0)
+      .sort((a, b) => a.daysLeft - b.daysLeft),
+  [items]);
+
   // ── Main dashboard ──────────────────────────────────────────────────────────
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -116,11 +126,14 @@ const Index = () => {
           <p className="text-xs text-muted-foreground uppercase tracking-widest font-medium">Jan 2026 Term</p>
           <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
         </div>
-        <div className="text-right space-y-1">
-          <p className="text-xs text-muted-foreground">{selectedCourses.length} courses · {pendingCount} pending</p>
-          <p className="text-xs text-muted-foreground">
-            {new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
-          </p>
+        <div className="flex flex-col items-end gap-2">
+          <AddCustomDeadlineDialog onAdd={addCustomDeadline} />
+          <div className="text-right space-y-0.5">
+            <p className="text-xs text-muted-foreground">{selectedCourses.length} courses · {pendingCount} pending</p>
+            <p className="text-xs text-muted-foreground">
+              {new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+            </p>
+          </div>
         </div>
       </div>
 
@@ -266,6 +279,24 @@ const Index = () => {
         )}
       </div>
 
+      {/* My Custom Deadlines */}
+      {customDeadlines.length > 0 && (
+        <CollapsibleSection
+          id="custom"
+          title="My Deadlines"
+          icon={<StickyNote className="h-4 w-4 text-violet-400" />}
+          count={pendingCustom.length}
+          titleClass="text-violet-400"
+          cardClass="border-violet-500/20"
+          collapsed={collapsedSections['custom'] ?? false}
+          onToggle={() => toggleSection('custom')}
+          emptyText="No upcoming custom deadlines."
+          items={pendingCustom}
+          onItemToggle={toggleComplete}
+          onItemDelete={deleteCustomDeadline}
+        />
+      )}
+
       {/* Today */}
       {(() => { const f = applyFilter(todayDeadlines); return (
       <CollapsibleSection
@@ -367,6 +398,7 @@ function CollapsibleSection({
   emptyText,
   items,
   onItemToggle,
+  onItemDelete,
 }: {
   id: string;
   title: string;
@@ -379,6 +411,7 @@ function CollapsibleSection({
   emptyText?: string;
   items: any[];
   onItemToggle: (id: string) => void;
+  onItemDelete?: (id: string) => void;
 }) {
   return (
     <Card className={cn("glass-card overflow-hidden", cardClass)}>
@@ -405,7 +438,12 @@ function CollapsibleSection({
           ) : (
             <div className="space-y-0.5">
               {items.map((item) => (
-                <DeadlineRow key={item.id} item={item} onToggle={onItemToggle} />
+                <DeadlineRow
+                  key={item.id}
+                  item={item}
+                  onToggle={onItemToggle}
+                  onDelete={item.isCustom ? onItemDelete : undefined}
+                />
               ))}
             </div>
           )}
