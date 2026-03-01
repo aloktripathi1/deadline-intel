@@ -1,7 +1,7 @@
 import { useMemo, useRef } from "react";
 import { useDeadlines } from "@/hooks/use-deadlines";
 import { cn } from "@/lib/utils";
-import { SUBJECT_LABELS, Subject } from "@/types/deadline";
+import { SUBJECT_LABELS, Subject, COURSE_CATALOG } from "@/types/deadline";
 import { Badge } from "@/components/ui/badge";
 
 const MONTHS = [
@@ -12,31 +12,61 @@ const MONTHS = [
 ];
 
 const TOTAL_DAYS = 120;
+const TIMELINE_START = '2026-02-01';
+const TIMELINE_END   = '2026-05-31';
 
-const subjectBg: Record<string, string> = {
-  MLP: 'bg-steel',
-  DL_GENAI: 'bg-amber',
-  TDS: 'bg-emerald',
-  ALL: 'bg-foreground',
-};
+// Rotating colour palette — one per selected course
+const LANE_COLORS = [
+  'bg-steel',
+  'bg-amber',
+  'bg-emerald',
+  'bg-blue-400',
+  'bg-purple-400',
+  'bg-pink-400',
+  'bg-orange-400',
+  'bg-cyan-400',
+];
 
 function dateToDayOffset(dateStr: string): number {
-  const start = new Date('2026-02-01').getTime();
+  const start = new Date(TIMELINE_START).getTime();
   const d = new Date(dateStr).getTime();
   return Math.max(0, Math.min(TOTAL_DAYS, Math.round((d - start) / (1000 * 60 * 60 * 24))));
 }
 
 const Timeline = () => {
-  const { items } = useDeadlines();
+  const { allItems, selectedCourses, hasConfiguredCourses } = useDeadlines();
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  // Only non-project courses get a dedicated visual lane
+  const laneCourses = useMemo(
+    () => selectedCourses.filter(s => !COURSE_CATALOG.find(c => c.id === s)?.isProject),
+    [selectedCourses],
+  );
+
+  // Build subject → tailwind colour lookup from lane order
+  const subjectColorMap = useMemo(() => {
+    const map: Record<string, string> = { ALL: 'bg-foreground' };
+    laneCourses.forEach((s, i) => { map[s] = LANE_COLORS[i % LANE_COLORS.length]; });
+    return map;
+  }, [laneCourses]);
+
+  // Restrict to the Feb–May 2026 window
+  const timelineItems = useMemo(
+    () => allItems.filter(item => {
+      const d = new Date(item.date);
+      return d >= new Date(TIMELINE_START) && d <= new Date(TIMELINE_END);
+    }),
+    [allItems],
+  );
+
+  // Crunch zones: 3+ pending deadlines within any 3-day window
   const clusters = useMemo(() => {
-    const pending = items.filter((i) => !i.completed);
+    const pending = timelineItems.filter(i => !i.completed);
     const result: { start: number; end: number }[] = [];
     for (let day = 0; day < TOTAL_DAYS - 3; day++) {
-      const count = pending.filter((i) => {
-        const offset = dateToDayOffset(i.date);
-        return offset >= day && offset <= day + 3;
+      const count = pending.filter(i => {
+        const off = dateToDayOffset(i.date);
+        return off >= day && off <= day + 3;
       }).length;
       if (count >= 3) {
         if (result.length > 0 && result[result.length - 1].end >= day - 1) {
@@ -47,10 +77,30 @@ const Timeline = () => {
       }
     }
     return result;
-  }, [items]);
+  }, [timelineItems]);
 
-  const exams = items.filter((i) => i.type === 'exam');
-  const nonExams = items.filter((i) => i.type !== 'exam');
+  const examPillars = timelineItems.filter(i => i.type === 'exam' || i.type === 'quiz' || i.type === 'endterm');
+  const events      = timelineItems.filter(i => i.type !== 'exam' && i.type !== 'quiz' && i.type !== 'endterm');
+
+  // ── Empty state ────────────────────────────────────────────────────────────
+  if (!hasConfiguredCourses || selectedCourses.length === 0) {
+    return (
+      <div className="space-y-8">
+        <div className="space-y-1">
+          <h1 className="text-3xl font-bold tracking-tight">Academic Timeline</h1>
+          <p className="text-sm text-muted-foreground">February — May 2026 · Scroll horizontally to explore</p>
+        </div>
+        <div className="glass-card rounded-xl p-12 flex flex-col items-center justify-center gap-3 text-center min-h-[220px]">
+          <p className="text-lg font-semibold">No courses selected for this term</p>
+          <p className="text-sm text-muted-foreground">
+            Head to <span className="font-medium text-foreground">Subjects</span> to pick your courses and unlock the timeline.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  const laneHeight = Math.max(320, 80 + laneCourses.length * 70);
 
   return (
     <div className="space-y-8">
@@ -60,22 +110,26 @@ const Timeline = () => {
       </div>
 
       <div ref={scrollRef} className="overflow-x-auto pb-4 glass-card rounded-xl p-4">
-        <div className="relative" style={{ width: `${TOTAL_DAYS * 12}px`, minHeight: '320px' }}>
+        <div className="relative" style={{ width: `${TOTAL_DAYS * 12}px`, minHeight: `${laneHeight}px` }}>
+
           {/* Month markers */}
           <div className="flex border-b border-border/50">
             {MONTHS.map((m) => {
               const startOff = dateToDayOffset(m.start);
-              const endOff = dateToDayOffset(m.end);
-              const width = (endOff - startOff) * 12;
+              const endOff   = dateToDayOffset(m.end);
               return (
-                <div key={m.label} style={{ width: `${width}px` }} className="text-xs font-semibold text-muted-foreground px-2 py-2.5 border-r border-border/30">
+                <div
+                  key={m.label}
+                  style={{ width: `${(endOff - startOff) * 12}px` }}
+                  className="text-xs font-semibold text-muted-foreground px-2 py-2.5 border-r border-border/30"
+                >
                   {m.label} 2026
                 </div>
               );
             })}
           </div>
 
-          {/* Cluster zones */}
+          {/* Crunch zones */}
           {clusters.map((c, i) => (
             <div
               key={i}
@@ -86,8 +140,8 @@ const Timeline = () => {
             </div>
           ))}
 
-          {/* Exam pillars */}
-          {exams.map((exam) => {
+          {/* Exam / quiz / end-term pillars */}
+          {examPillars.map((exam) => {
             const offset = dateToDayOffset(exam.date);
             return (
               <div
@@ -95,53 +149,68 @@ const Timeline = () => {
                 className="absolute top-12 bottom-0 w-px bg-destructive/40 z-10"
                 style={{ left: `${offset * 12}px` }}
               >
-                <Badge variant="destructive" className="absolute -top-0.5 -translate-x-1/2 text-[9px] px-1.5 py-0 whitespace-nowrap shadow-sm">
+                <Badge
+                  variant="destructive"
+                  className="absolute -top-0.5 -translate-x-1/2 text-[9px] px-1.5 py-0 whitespace-nowrap shadow-sm"
+                >
                   {exam.title}
                 </Badge>
               </div>
             );
           })}
 
-          {/* Events */}
-          {nonExams.map((item) => {
-            const offset = dateToDayOffset(item.date);
-            const subjectIdx = item.subject === 'MLP' ? 0 : item.subject === 'DL_GENAI' ? 1 : 2;
-            const row = subjectIdx;
+          {/* Events (GAs, milestones, OPPEs, etc.) */}
+          {events.map((item) => {
+            // ALL-subject items anchor to the first lane
+            const laneIdx = item.subject === 'ALL'
+              ? 0
+              : laneCourses.indexOf(item.subject as Subject);
+
+            if (laneIdx === -1) return null; // not in this user's selection
+
+            const offset     = dateToDayOffset(item.date);
             const typeOffset = item.type === 'ga' ? 0 : item.type === 'milestone' ? 16 : 32;
+
             return (
               <div
                 key={item.id}
                 className={cn(
                   "absolute rounded-full z-20 cursor-default transition-transform duration-200 hover:scale-150",
                   item.type === 'ga' ? "h-2.5 w-2.5" : "h-3.5 w-3.5",
-                  subjectBg[item.subject],
+                  subjectColorMap[item.subject] ?? 'bg-muted-foreground',
                   item.completed && "opacity-25",
                 )}
-                style={{ left: `${offset * 12 - 5}px`, top: `${60 + row * 70 + typeOffset}px` }}
-                title={`${item.title} — ${SUBJECT_LABELS[item.subject as Subject | 'ALL']} — ${new Date(item.date).toLocaleDateString()}`}
+                style={{ left: `${offset * 12 - 5}px`, top: `${60 + laneIdx * 70 + typeOffset}px` }}
+                title={`${item.title} — ${SUBJECT_LABELS[item.subject as Subject | 'ALL'] ?? item.subject} — ${new Date(item.date).toLocaleDateString()}`}
               />
             );
           })}
 
-          {/* Subject lanes */}
-          {(['MLP', 'DL_GENAI', 'TDS'] as Subject[]).map((subject, idx) => (
+          {/* Subject lane labels */}
+          {laneCourses.map((subject, idx) => (
             <div
               key={subject}
               className="absolute left-0 text-[10px] font-medium text-muted-foreground/70"
               style={{ top: `${60 + idx * 70 - 12}px` }}
             >
-              {SUBJECT_LABELS[subject]}
+              {SUBJECT_LABELS[subject] ?? subject}
             </div>
           ))}
         </div>
       </div>
 
       {/* Legend */}
-      <div className="flex items-center gap-5 text-[10px] text-muted-foreground">
-        <div className="flex items-center gap-1.5"><div className="h-2.5 w-2.5 rounded-full bg-steel" /> MLP</div>
-        <div className="flex items-center gap-1.5"><div className="h-2.5 w-2.5 rounded-full bg-amber" /> DL GenAI</div>
-        <div className="flex items-center gap-1.5"><div className="h-2.5 w-2.5 rounded-full bg-emerald" /> TDS</div>
-        <div className="flex items-center gap-1.5"><div className="h-3 w-3 rounded-full bg-muted-foreground/20" /> Milestone</div>
+      <div className="flex flex-wrap items-center gap-5 text-[10px] text-muted-foreground">
+        {laneCourses.map((subject, idx) => (
+          <div key={subject} className="flex items-center gap-1.5">
+            <div className={cn("h-2.5 w-2.5 rounded-full", LANE_COLORS[idx % LANE_COLORS.length])} />
+            {SUBJECT_LABELS[subject] ?? subject}
+          </div>
+        ))}
+        <div className="flex items-center gap-1.5">
+          <div className="h-3 w-3 rounded-full bg-muted-foreground/20" />
+          Milestone / OPPE
+        </div>
         <div className="flex items-center gap-1.5 text-urgency-red font-medium">■ Crunch Zone</div>
       </div>
     </div>

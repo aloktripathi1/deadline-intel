@@ -35,7 +35,7 @@ const About = () => {
             <div className="min-w-0 space-y-1">
               <h2 className="text-lg font-bold tracking-tight">Alok Tripathi</h2>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Data Science undergrad at IIT Madras · AI/ML &amp; Backend Engineering
+                Data Science undergrad at IIT Madras, AI/ML &amp; Backend Engineering
               </p>
               <a
                 href="https://github.com/aloktripathi1"
