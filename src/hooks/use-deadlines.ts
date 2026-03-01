@@ -137,11 +137,11 @@ export function useDeadlines() {
   }, [completed]);
 
   const completionRate = useMemo(() => {
-    const pastItems = items.filter((i) => i.daysLeft < 0 || i.completed);
-    if (pastItems.length === 0) return 100;
-    const doneCount = pastItems.filter((i) => i.completed).length;
-    return Math.round((doneCount / pastItems.length) * 100);
-  }, [items]);
+    const total = allItems.length;
+    if (total === 0) return 0;
+    const doneCount = allItems.filter((i) => state.completedIds.includes(i.id)).length;
+    return Math.round((doneCount / total) * 100);
+  }, [allItems, state.completedIds]);
 
   const atRisk = useMemo(() => {
     return pending.filter((i) => i.daysLeft >= 0 && i.daysLeft <= 7).length >= 3;
