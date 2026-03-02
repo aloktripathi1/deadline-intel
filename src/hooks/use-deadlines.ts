@@ -1,6 +1,7 @@
 import { useState, useCallback, useMemo } from 'react';
 import { ALL_DEADLINES } from '@/data/deadlines';
 import { DeadlineItem, DeadlineState, getDaysLeft, getUrgencyZone, Subject, COURSE_CATALOG } from '@/types/deadline';
+import { useCustomDeadlines } from '@/hooks/use-custom-deadlines';
 
 const STORAGE_KEY = 'deadline-intel-state';
 
@@ -28,6 +29,7 @@ function saveState(state: DeadlineState) {
 
 export function useDeadlines() {
   const [state, setState] = useState<DeadlineState>(loadState);
+  const { customDeadlines, addCustomDeadline, deleteCustomDeadline } = useCustomDeadlines();
 
   const toggleComplete = useCallback((id: string) => {
     setState((prev) => {
@@ -77,19 +79,22 @@ export function useDeadlines() {
     if (!hasConfiguredCourses) return []; // Show nothing until user picks courses
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    return ALL_DEADLINES.filter(item => {
+    const academic = ALL_DEADLINES.filter(item => {
       if (item.subject !== 'ALL' && !selectedCourses.includes(item.subject as Subject)) return false;
       return new Date(item.date) >= today; // hide past deadlines (dashboard only)
     });
-  }, [selectedCourses, hasConfiguredCourses]);
+    const upcomingCustom = customDeadlines.filter(item => new Date(item.date) >= today);
+    return [...academic, ...upcomingCustom];
+  }, [selectedCourses, hasConfiguredCourses, customDeadlines]);
 
   // All deadlines for selected courses including past — used by Subjects page
   const allFilteredDeadlines = useMemo(() => {
     if (!hasConfiguredCourses) return [];
-    return ALL_DEADLINES.filter(item =>
+    const academic = ALL_DEADLINES.filter(item =>
       item.subject === 'ALL' || selectedCourses.includes(item.subject as Subject)
     );
-  }, [selectedCourses, hasConfiguredCourses]);
+    return [...academic, ...customDeadlines];
+  }, [selectedCourses, hasConfiguredCourses, customDeadlines]);
 
   const items = useMemo(() => {
     return filteredDeadlines.map((item) => ({
@@ -183,10 +188,13 @@ export function useDeadlines() {
     theme: state.theme,
     selectedCourses,
     hasConfiguredCourses,
+    customDeadlines,
     toggleComplete,
     resetData,
     setTheme,
     setSelectedCourses,
     getSubjectItems,
+    addCustomDeadline,
+    deleteCustomDeadline,
   };
 }
