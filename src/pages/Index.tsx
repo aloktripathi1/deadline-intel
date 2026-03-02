@@ -83,6 +83,13 @@ const Index = () => {
     pending.filter(i => i.daysLeft > 7).sort((a, b) => a.daysLeft - b.daysLeft),
   [pending]);
 
+  // Pending custom deadlines (upcoming) for dedicated section
+  // NOTE: Must be declared before any early return to comply with React Rules of Hooks
+  const pendingCustom = useMemo(() =>
+    items.filter(i => i.isCustom && !i.completed && i.daysLeft >= 0)
+      .sort((a, b) => a.daysLeft - b.daysLeft),
+  [items]);
+
   const progress = termProgress();
   const pendingCount = pending.length;
 
@@ -109,12 +116,6 @@ const Index = () => {
       </div>
     );
   }
-
-  // Pending custom deadlines (upcoming) for dedicated section
-  const pendingCustom = useMemo(() =>
-    items.filter(i => i.isCustom && !i.completed && i.daysLeft >= 0)
-      .sort((a, b) => a.daysLeft - b.daysLeft),
-  [items]);
 
   // ── Main dashboard ──────────────────────────────────────────────────────────
   return (
