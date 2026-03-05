@@ -14,8 +14,8 @@ import {
 } from "lucide-react";
 import { SUBJECT_LABELS, Subject, getPriorityLabel, DeadlineType } from "@/types/deadline";
 
-const THEORY_TYPES: DeadlineType[] = ['ga', 'quiz', 'endterm', 'oppe', 'nppe', 'roe', 'bpt', 'extra_activity'];
-const PROJECT_TYPES: DeadlineType[] = ['milestone', 'kaggle', 'kaggle_review', 'form', 'project'];
+const THEORY_TYPES: DeadlineType[] = ['ga', 'quiz', 'endterm', 'oppe', 'nppe', 'roe', 'bpt', 'extra_activity', 'kaggle', 'kaggle_review'];
+const PROJECT_TYPES: DeadlineType[] = ['milestone', 'form', 'project'];
 
 // Semester bounds: Jan 13 – May 10, 2026
 const TERM_START = new Date('2026-01-13');
