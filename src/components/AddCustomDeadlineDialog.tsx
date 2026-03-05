@@ -65,12 +65,12 @@ export function AddCustomDeadlineDialog({ onAdd }: AddCustomDeadlineDialogProps)
       <DialogTrigger asChild>
         <Button size="sm" variant="outline" className="gap-1.5 text-xs">
           <Plus className="h-3.5 w-3.5" />
-          Add Custom Deadline
+          Add Deadline
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Add Custom Deadline</DialogTitle>
+          <DialogTitle>Add Deadline</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 pt-2">
           <div className="space-y-1.5">
