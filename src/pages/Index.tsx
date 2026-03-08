@@ -12,7 +12,7 @@ import {
   Settings2, CalendarCheck, ListTodo, ChevronDown, ChevronUp,
   BookOpen, FolderGit2, StickyNote, Trophy, Sparkles, CalendarDays,
 } from "lucide-react";
-import { SUBJECT_LABELS, Subject, getPriorityLabel, DeadlineType } from "@/types/deadline";
+import { SUBJECT_LABELS, Subject, getPriorityLabel, DeadlineType, DeadlineItem, UrgencyZone } from "@/types/deadline";
 
 const THEORY_TYPES: DeadlineType[] = ['ga', 'quiz', 'endterm', 'oppe', 'nppe', 'roe', 'bpt', 'extra_activity', 'kaggle', 'kaggle_review'];
 const PROJECT_TYPES: DeadlineType[] = ['milestone', 'form', 'project'];
@@ -512,7 +512,7 @@ function CollapsibleSection({
   collapsed: boolean;
   onToggle: () => void;
   emptyText?: string;
-  items: any[];
+  items: (DeadlineItem & { completed: boolean; daysLeft: number; urgency: UrgencyZone })[];
   onItemToggle: (id: string) => void;
   onItemDelete?: (id: string) => void;
 }) {

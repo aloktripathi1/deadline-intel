@@ -19,7 +19,7 @@ function loadState(): DeadlineState {
         hasConfiguredCourses: parsed.hasConfiguredCourses === true,
       };
     }
-  } catch {}
+  } catch (_e) { /* ignore parse errors */ }
   return { completedIds: [], streak: 0, lastCompletionDate: null, theme: 'dark', selectedCourses: DEFAULT_COURSES, hasConfiguredCourses: false };
 }
 

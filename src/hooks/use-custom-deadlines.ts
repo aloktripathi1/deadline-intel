@@ -16,7 +16,7 @@ function loadCustomDeadlines(): DeadlineItem[] {
       const parsed = JSON.parse(raw);
       if (Array.isArray(parsed)) return parsed;
     }
-  } catch {}
+  } catch (_e) { /* ignore parse errors */ }
   return [];
 }
 

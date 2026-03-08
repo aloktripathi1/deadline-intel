@@ -13,7 +13,7 @@ function loadNotifState(): NotifState {
   try {
     const raw = localStorage.getItem(NOTIF_KEY);
     if (raw) return JSON.parse(raw);
-  } catch {}
+  } catch (_e) { /* ignore parse errors */ }
   return { enabled: false, leadHours: 24, lastNotified: {} };
 }
 

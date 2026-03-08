@@ -93,8 +93,8 @@ function SubjectCard({
 
   const enriched = items.map((i) => ({
     ...i,
-    completed: ('completed' in i) ? (i as any).completed : false,
-    daysLeft: ('daysLeft' in i) ? (i as any).daysLeft : 0,
+    completed: ('completed' in i) ? (i as { completed: boolean }).completed : false,
+    daysLeft: ('daysLeft' in i) ? (i as { daysLeft: number }).daysLeft : 0,
   }));
 
   const completed = enriched.filter((i) => i.completed);
