@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { BellOff, BellRing, Check } from "lucide-react";
 import { COURSE_CATALOG, CourseLevel, Subject } from "@/types/deadline";
+
 import { toast } from "@/components/ui/sonner";
 
 const LEAD_OPTIONS = [
@@ -256,7 +257,7 @@ const Settings = () => {
       </Card>
 
       {/* Danger Zone */}
-      <Card className={cn("glass-card border-destructive/20 animate-float-in stagger-5")}>
+      <Card className={cn("glass-card border-destructive/20 animate-float-in stagger-6")}>
         <CardHeader>
           <CardTitle className="text-base text-destructive">Danger Zone</CardTitle>
           <CardDescription>Reset all completion data. This cannot be undone.</CardDescription>
