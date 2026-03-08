@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDeadlines } from "@/hooks/use-deadlines";
+import { useLiveSessions } from "@/hooks/use-live-sessions";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -10,7 +11,7 @@ import { cn } from "@/lib/utils";
 import {
   AlertTriangle, TrendingUp, CheckCircle2, Flame, Zap, Clock,
   Settings2, CalendarCheck, ListTodo, ChevronDown, ChevronUp,
-  BookOpen, FolderGit2, StickyNote,
+  BookOpen, FolderGit2, StickyNote, Video, Trophy, Sparkles, CalendarDays,
 } from "lucide-react";
 import { SUBJECT_LABELS, Subject, getPriorityLabel, DeadlineType } from "@/types/deadline";
 
@@ -20,6 +21,7 @@ const PROJECT_TYPES: DeadlineType[] = ['milestone', 'form', 'project'];
 // Semester bounds: Jan 13 – May 10, 2026
 const TERM_START = new Date('2026-01-13');
 const TERM_END = new Date('2026-05-10');
+const NEXT_TERM_START = new Date('2026-05-13');
 
 function termProgress() {
   const now = new Date();
@@ -35,6 +37,7 @@ const Index = () => {
 
   const {
     items,
+    allItems,
     pending,
     nextCritical,
     redZone,
@@ -45,6 +48,7 @@ const Index = () => {
     completedThisWeek,
     completionRate,
     atRisk,
+    streak,
     toggleComplete,
     hasConfiguredCourses,
     selectedCourses,
@@ -52,6 +56,26 @@ const Index = () => {
     addCustomDeadline,
     deleteCustomDeadline,
   } = useDeadlines();
+
+  const { sessions: liveSessions } = useLiveSessions();
+
+  // Today's and next-7-days live sessions
+  const todayStr = new Date().toISOString().split('T')[0];
+  const in7Days = new Date();
+  in7Days.setDate(in7Days.getDate() + 7);
+
+  const todayLiveSessions = useMemo(() =>
+    liveSessions.filter(s => s.start.startsWith(todayStr)),
+  [liveSessions, todayStr]);
+
+  const weekLiveSessions = useMemo(() => {
+    const todayStart = new Date(todayStr);
+    return liveSessions.filter(s => {
+      const d = new Date(s.start);
+      return d > todayStart && d <= in7Days;
+    }).sort((a, b) => a.start.localeCompare(b.start));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [liveSessions, todayStr]);
 
   const toggleSection = (key: string) =>
     setCollapsedSections(prev => ({ ...prev, [key]: !prev[key] }));
@@ -92,6 +116,8 @@ const Index = () => {
 
   const progress = termProgress();
   const pendingCount = pending.length;
+  const isTermOver = new Date() > TERM_END;
+  const daysToNextTerm = Math.max(0, Math.ceil((NEXT_TERM_START.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)));
 
   // ── Empty / Not configured ──────────────────────────────────────────────────
   if (!hasConfiguredCourses) {
@@ -113,6 +139,103 @@ const Index = () => {
             Select Your Courses
           </button>
         </div>
+      </div>
+    );
+  }
+
+  // ── Term over ─────────────────────────────────────────────────────────────
+  if (isTermOver && hasConfiguredCourses) {
+    const totalCompleted = allItems.filter(i => !i.isCustom && i.completed).length;
+    return (
+      <div className="max-w-4xl mx-auto space-y-6">
+
+        {/* Banner */}
+        <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-amber/25 bg-amber/5">
+          <Sparkles className="h-4 w-4 text-amber shrink-0" />
+          <p className="text-sm text-foreground/80">
+            <span className="font-semibold text-amber">Jan 2026 term has ended</span>
+            {" — stay tuned for May 2026 term."}
+          </p>
+        </div>
+
+        {/* Term Summary */}
+        <Card className="glass-card">
+          <CardContent className="p-6 space-y-4">
+            <div className="flex items-center gap-2">
+              <Trophy className="h-5 w-5 text-amber" />
+              <h2 className="text-base font-semibold">Jan 2026 · Term Summary</h2>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {[
+                { icon: CheckCircle2, iconClass: "text-urgency-green", bg: "bg-urgency-green/10", value: totalCompleted, label: "Deadlines completed" },
+                { icon: TrendingUp, iconClass: "text-primary", bg: "bg-primary/10", value: `${completionRate}%`, label: "Completion rate" },
+                { icon: Flame, iconClass: "text-amber", bg: "bg-amber/10", value: streak, label: "Streak" },
+                { icon: BookOpen, iconClass: "text-steel", bg: "bg-steel/10", value: selectedCourses.length, label: "Courses" },
+              ].map(({ icon: Icon, iconClass, bg, value, label }) => (
+                <div key={label} className="flex items-center gap-3 p-3 rounded-xl bg-muted/30">
+                  <div className={cn("h-9 w-9 rounded-xl flex items-center justify-center shrink-0", bg)}>
+                    <Icon className={cn("h-4 w-4", iconClass)} />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xl font-bold leading-none tabular-nums">{value}</p>
+                    <p className="text-[10px] text-muted-foreground mt-1 truncate">{label}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Countdown to next term */}
+        {daysToNextTerm > 0 && (
+          <Card className="glass-card border-primary/20">
+            <CardContent className="p-6 flex items-center gap-6">
+              <div className="h-16 w-16 rounded-2xl bg-primary/10 flex flex-col items-center justify-center shrink-0">
+                <span className="text-2xl font-black font-mono text-primary leading-none">{daysToNextTerm}</span>
+                <span className="text-[9px] text-muted-foreground uppercase tracking-widest mt-0.5">days</span>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground uppercase tracking-widest font-medium mb-1">Next Term</p>
+                <p className="text-base font-bold">May 2026 Term starts</p>
+                <p className="text-sm text-muted-foreground">
+                  {NEXT_TERM_START.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Personal deadlines — still fully usable during the break */}
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-xs text-muted-foreground uppercase tracking-widest font-medium">Break reminders</p>
+            <h2 className="text-base font-semibold mt-0.5">My Deadlines</h2>
+          </div>
+          <AddCustomDeadlineDialog onAdd={addCustomDeadline} />
+        </div>
+
+        {customDeadlines.length > 0 ? (
+          <CollapsibleSection
+            id="custom-term-over"
+            title="My Deadlines"
+            icon={<StickyNote className="h-4 w-4 text-violet-400" />}
+            count={pendingCustom.length}
+            titleClass="text-violet-400"
+            cardClass="border-violet-500/20"
+            collapsed={false}
+            onToggle={() => {}}
+            emptyText="No upcoming custom deadlines."
+            items={pendingCustom}
+            onItemToggle={toggleComplete}
+            onItemDelete={deleteCustomDeadline}
+          />
+        ) : (
+          <div className="flex flex-col items-center justify-center py-10 gap-2 text-center glass-card rounded-xl border border-border/40">
+            <CalendarDays className="h-8 w-8 text-muted-foreground/30" />
+            <p className="text-sm text-muted-foreground">No personal deadlines yet.</p>
+            <p className="text-xs text-muted-foreground/60">Add reminders to stay on track during the break.</p>
+          </div>
+        )}
       </div>
     );
   }
@@ -176,6 +299,65 @@ const Index = () => {
           </Card>
         ))}
       </div>
+
+      {/* Live Sessions — today + this week */}
+      {(todayLiveSessions.length > 0 || weekLiveSessions.length > 0) && (
+        <Card className="glass-card border-violet-500/20">
+          <CardContent className="p-4 space-y-3">
+            <div className="flex items-center gap-2">
+              <Video className="h-4 w-4 text-violet-400 shrink-0" />
+              <span className="text-sm font-semibold text-violet-400">Live Sessions</span>
+            </div>
+
+            {/* Today's sessions */}
+            {todayLiveSessions.length > 0 && (
+              <div className="space-y-1.5">
+                <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-medium">Today</p>
+                {todayLiveSessions.map(s => (
+                  <div key={s.id} className="flex items-start gap-3 p-2.5 rounded-lg bg-violet-500/5 border border-violet-500/15">
+                    <div className="text-[10px] font-mono text-violet-400 w-14 shrink-0 mt-0.5 leading-tight">
+                      {s.isAllDay ? 'All day' : formatSessionTime(s.start)}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium leading-snug truncate">{s.title}</p>
+                      {s.location && <p className="text-[11px] text-muted-foreground truncate">{s.location}</p>}
+                      {s.calendarName && <p className="text-[10px] text-violet-400/60 truncate">{s.calendarName}</p>}
+                    </div>
+                    {s.end && !s.isAllDay && (
+                      <span className="text-[10px] text-muted-foreground shrink-0 mt-0.5">
+                        – {formatSessionTime(s.end)}
+                      </span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* This week */}
+            {weekLiveSessions.length > 0 && (
+              <div className="space-y-1.5">
+                <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-medium">Next 7 days</p>
+                {weekLiveSessions.map(s => (
+                  <div key={s.id} className="flex items-start gap-3 py-2 border-b border-border/30 last:border-0">
+                    <div className="text-[10px] font-mono text-muted-foreground w-14 shrink-0 mt-0.5 leading-tight">
+                      {new Date(s.start).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">{s.title}</p>
+                      {!s.isAllDay && (
+                        <p className="text-[11px] text-muted-foreground">
+                          {formatSessionTime(s.start)}{s.end ? ` – ${formatSessionTime(s.end)}` : ''}
+                        </p>
+                      )}
+                      {s.location && <p className="text-[11px] text-muted-foreground truncate">{s.location}</p>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       {/* Next Critical */}
       {nextCritical && (
@@ -385,6 +567,13 @@ const Index = () => {
     </div>
   );
 };
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function formatSessionTime(iso: string): string {
+  try {
+    return new Date(iso).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+  } catch { return ''; }
+}
 
 // ── Collapsible section component ────────────────────────────────────────────
 function CollapsibleSection({
