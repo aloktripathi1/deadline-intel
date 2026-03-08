@@ -1,7 +1,6 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDeadlines } from "@/hooks/use-deadlines";
-import { useLiveSessions } from "@/hooks/use-live-sessions";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -11,7 +10,7 @@ import { cn } from "@/lib/utils";
 import {
   AlertTriangle, TrendingUp, CheckCircle2, Flame, Zap, Clock,
   Settings2, CalendarCheck, ListTodo, ChevronDown, ChevronUp,
-  BookOpen, FolderGit2, StickyNote, Video, Trophy, Sparkles, CalendarDays,
+  BookOpen, FolderGit2, StickyNote, Trophy, Sparkles, CalendarDays,
 } from "lucide-react";
 import { SUBJECT_LABELS, Subject, getPriorityLabel, DeadlineType } from "@/types/deadline";
 
@@ -56,26 +55,6 @@ const Index = () => {
     addCustomDeadline,
     deleteCustomDeadline,
   } = useDeadlines();
-
-  const { sessions: liveSessions } = useLiveSessions();
-
-  // Today's and next-7-days live sessions
-  const todayStr = new Date().toISOString().split('T')[0];
-  const in7Days = new Date();
-  in7Days.setDate(in7Days.getDate() + 7);
-
-  const todayLiveSessions = useMemo(() =>
-    liveSessions.filter(s => s.start.startsWith(todayStr)),
-  [liveSessions, todayStr]);
-
-  const weekLiveSessions = useMemo(() => {
-    const todayStart = new Date(todayStr);
-    return liveSessions.filter(s => {
-      const d = new Date(s.start);
-      return d > todayStart && d <= in7Days;
-    }).sort((a, b) => a.start.localeCompare(b.start));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [liveSessions, todayStr]);
 
   const toggleSection = (key: string) =>
     setCollapsedSections(prev => ({ ...prev, [key]: !prev[key] }));
@@ -300,65 +279,6 @@ const Index = () => {
         ))}
       </div>
 
-      {/* Live Sessions — today + this week */}
-      {(todayLiveSessions.length > 0 || weekLiveSessions.length > 0) && (
-        <Card className="glass-card border-violet-500/20">
-          <CardContent className="p-4 space-y-3">
-            <div className="flex items-center gap-2">
-              <Video className="h-4 w-4 text-violet-400 shrink-0" />
-              <span className="text-sm font-semibold text-violet-400">Live Sessions</span>
-            </div>
-
-            {/* Today's sessions */}
-            {todayLiveSessions.length > 0 && (
-              <div className="space-y-1.5">
-                <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-medium">Today</p>
-                {todayLiveSessions.map(s => (
-                  <div key={s.id} className="flex items-start gap-3 p-2.5 rounded-lg bg-violet-500/5 border border-violet-500/15">
-                    <div className="text-[10px] font-mono text-violet-400 w-14 shrink-0 mt-0.5 leading-tight">
-                      {s.isAllDay ? 'All day' : formatSessionTime(s.start)}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium leading-snug truncate">{s.title}</p>
-                      {s.location && <p className="text-[11px] text-muted-foreground truncate">{s.location}</p>}
-                      {s.calendarName && <p className="text-[10px] text-violet-400/60 truncate">{s.calendarName}</p>}
-                    </div>
-                    {s.end && !s.isAllDay && (
-                      <span className="text-[10px] text-muted-foreground shrink-0 mt-0.5">
-                        – {formatSessionTime(s.end)}
-                      </span>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* This week */}
-            {weekLiveSessions.length > 0 && (
-              <div className="space-y-1.5">
-                <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-medium">Next 7 days</p>
-                {weekLiveSessions.map(s => (
-                  <div key={s.id} className="flex items-start gap-3 py-2 border-b border-border/30 last:border-0">
-                    <div className="text-[10px] font-mono text-muted-foreground w-14 shrink-0 mt-0.5 leading-tight">
-                      {new Date(s.start).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">{s.title}</p>
-                      {!s.isAllDay && (
-                        <p className="text-[11px] text-muted-foreground">
-                          {formatSessionTime(s.start)}{s.end ? ` – ${formatSessionTime(s.end)}` : ''}
-                        </p>
-                      )}
-                      {s.location && <p className="text-[11px] text-muted-foreground truncate">{s.location}</p>}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      )}
-
       {/* Next Critical */}
       {nextCritical && (
         <Card className={cn(
@@ -567,13 +487,6 @@ const Index = () => {
     </div>
   );
 };
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
-function formatSessionTime(iso: string): string {
-  try {
-    return new Date(iso).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
-  } catch { return ''; }
-}
 
 // ── Collapsible section component ────────────────────────────────────────────
 function CollapsibleSection({
