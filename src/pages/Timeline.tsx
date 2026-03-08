@@ -3,7 +3,6 @@ import { useDeadlines } from "@/hooks/use-deadlines";
 import { cn } from "@/lib/utils";
 import { SUBJECT_LABELS, Subject, COURSE_CATALOG } from "@/types/deadline";
 import { Badge } from "@/components/ui/badge";
-import { AddCustomDeadlineDialog } from "@/components/AddCustomDeadlineDialog";
 
 const MONTHS = [
   { label: 'Feb', start: '2026-02-01', end: '2026-02-28' },
@@ -35,7 +34,7 @@ function dateToDayOffset(dateStr: string): number {
 }
 
 const Timeline = () => {
-  const { allItems, selectedCourses, hasConfiguredCourses, addCustomDeadline, customDeadlines } = useDeadlines();
+  const { allItems, selectedCourses, hasConfiguredCourses, customDeadlines } = useDeadlines();
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Only non-project courses get a dedicated visual lane
@@ -118,12 +117,9 @@ const Timeline = () => {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-start justify-between gap-4">
-        <div className="space-y-1">
-          <h1 className="text-3xl font-bold tracking-tight">Academic Timeline</h1>
-          <p className="text-sm text-muted-foreground">February — May 2026 · Scroll horizontally to explore</p>
-        </div>
-        <AddCustomDeadlineDialog onAdd={addCustomDeadline} />
+      <div className="space-y-1">
+        <h1 className="text-3xl font-bold tracking-tight">Academic Timeline</h1>
+        <p className="text-sm text-muted-foreground">February — May 2026 · Scroll horizontally to explore</p>
       </div>
 
       <div ref={scrollRef} className="overflow-x-auto pb-4 glass-card rounded-xl p-4">
