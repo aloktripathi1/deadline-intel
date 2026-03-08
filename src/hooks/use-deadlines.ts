@@ -156,7 +156,7 @@ export function useDeadlines() {
     const course = COURSE_CATALOG.find(c => c.id === subject);
     return allItems.filter((i) => {
       if (i.subject === subject) return true;
-      if (i.subject === 'ALL') {
+      if (i.subject === 'ALL' && !i.isCustom) {
         // Don't show common exams for project courses
         if (course?.isProject) return false;
         // Respect per-course quiz flags
