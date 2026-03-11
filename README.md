@@ -10,8 +10,8 @@ Track GAs, Quizzes, OPPEs, NPPEs, Kaggle submissions, project milestones and mor
 
 [![GitHub stars](https://img.shields.io/github/stars/aloktripathi1/deadline-intel?style=social)](https://github.com/aloktripathi1/deadline-intel)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Built with React](https://img.shields.io/badge/Built_with-React_19-61DAFB?logo=react&logoColor=white)](https://react.dev)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.6-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Built with React](https://img.shields.io/badge/Built_with-React_18-61DAFB?logo=react&logoColor=white)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 
 </div>
 
@@ -25,6 +25,7 @@ Track GAs, Quizzes, OPPEs, NPPEs, Kaggle submissions, project milestones and mor
 - **Urgency zones** — deadlines grouped by red (≤ 5 days), orange (≤ 10 days), and overdue
 - **Theory / Projects filter** — toggle between theory assessments and project milestones
 - **Stats at a glance** — pending count, weekly completions, completion rate, and day streak
+- **Custom deadlines** — add your own one-off deadlines with a title, date, and optional description
 
 ### Subjects
 - **Per-course progress cards** — see completion percentage, upcoming items, and risk level for every course
@@ -68,11 +69,11 @@ Track GAs, Quizzes, OPPEs, NPPEs, Kaggle submissions, project milestones and mor
 git clone https://github.com/aloktripathi1/deadline-intel.git
 cd deadline-intel
 
-# Install dependencies
-npm install
+# Install dependencies (npm or bun)
+npm install   # or: bun install
 
 # Start dev server
-npm run dev
+npm run dev   # or: bun run dev
 ```
 
 Open [http://localhost:5173](http://localhost:5173) — select your courses and go.
@@ -96,10 +97,10 @@ Open [http://localhost:5173](http://localhost:5173) — select your courses and 
 
 | Category | Technology |
 |---|---|
-| **Framework** | React 19 + TypeScript 5.6 |
+| **Framework** | React 18 + TypeScript 5.8 |
 | **Build** | Vite |
-| **Styling** | Tailwind CSS 4 + shadcn/ui |
-| **Routing** | React Router v7 |
+| **Styling** | Tailwind CSS 3.4 + shadcn/ui |
+| **Routing** | React Router v6 |
 | **Fonts** | Plus Jakarta Sans, DM Sans, JetBrains Mono |
 | **Testing** | Vitest |
 | **Notifications** | Browser Notifications API |
@@ -111,9 +112,9 @@ Open [http://localhost:5173](http://localhost:5173) — select your courses and 
 
 ```
 src/
-├── components/       # UI components (DeadlineRow, NavLink, layout, shadcn/ui)
+├── components/       # UI components (DeadlineRow, AddCustomDeadlineDialog, NavLink, layout, shadcn/ui)
 ├── data/             # All deadline data (deadlines.ts)
-├── hooks/            # Custom hooks (deadlines, notifications, mobile, toast)
+├── hooks/            # Custom hooks (deadlines, custom-deadlines, notifications, mobile, toast)
 ├── lib/              # Utility functions
 ├── pages/            # Route pages (Dashboard, Timeline, Subjects, Settings, About)
 ├── test/             # Test setup and specs
