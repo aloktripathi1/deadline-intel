@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="public/favicon1.ico" alt="Deadline Intel Logo" width="120" />
+
 # Deadline Intel
 
 **Never miss a deadline again.**
