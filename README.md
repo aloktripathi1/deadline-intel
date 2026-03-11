@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="public/favicon1.ico" alt="Deadline Intel Logo" width="120" />
+<img src="public/logo.png" alt="Deadline Intel Logo" width="120" />
 
 # Deadline Intel
 
