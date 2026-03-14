@@ -99,7 +99,7 @@ const mlpKaggle: DeadlineItem[] = [
 const tdsItems: DeadlineItem[] = [
   { id: 'tds-roe', title: 'ROE (Remote Online Exam)', subject: 'TDS', type: 'roe', date: '2026-04-05', priority: 1, description: '45 min, open internet, 20% weightage' },
   { id: 'tds-p1', title: 'Project 1', subject: 'TDS', type: 'project', date: '2026-03-30', priority: 2, description: '20% weightage, open internet' },
-  { id: 'tds-p2', title: 'Project 2', subject: 'TDS', type: 'project', date: '2026-04-13', priority: 2, description: '20% weightage, open internet' },
+  { id: 'tds-p2', title: 'Project 2', subject: 'TDS', type: 'project', date: '2026-04-27', priority: 2, description: '20% weightage, open internet' },
 ];
 
 // ── BA Assignments ──
@@ -150,7 +150,7 @@ const dlGenaiTheoryItems: DeadlineItem[] = [
 // ── DL GenAI Project specific (milestones, forms, final submission) ──
 const dlGenaiProjItems: DeadlineItem[] = [
   { id: 'dlg-form1', title: 'Registration Form', subject: 'DL_GENAI_PROJ', type: 'form', date: '2026-02-17', priority: 3 },
-  { id: 'dlg-form3', title: 'Deployment Link', subject: 'DL_GENAI_PROJ', type: 'form', date: '2026-03-12', priority: 3 },
+  { id: 'dlg-form3', title: 'Deployment Link', subject: 'DL_GENAI_PROJ', type: 'form', date: '2026-04-10', priority: 3 },
   { id: 'dlg-form2', title: 'Report Submission', subject: 'DL_GENAI_PROJ', type: 'form', date: '2026-03-30', priority: 3 },
   { id: 'dlg-m1', title: 'Milestone 1 — EDA & Baseline', subject: 'DL_GENAI_PROJ', type: 'milestone', date: '2026-02-18', priority: 3, description: 'EDA, rule-based baseline, Kaggle submission' },
   { id: 'dlg-m2', title: 'Milestone 2 — Classical ML', subject: 'DL_GENAI_PROJ', type: 'milestone', date: '2026-02-25', priority: 3, description: 'BoW/TF-IDF, classical models' },
@@ -167,7 +167,7 @@ const mlpProjItems: DeadlineItem[] = [
   { id: 'mlpproj-m3', title: 'Milestone 3 — Dim Reduction & Classical ML', subject: 'MLP_PROJ', type: 'milestone', date: '2026-03-01', priority: 3 },
   { id: 'mlpproj-m4', title: 'Milestone 4 — Ensemble & MLP', subject: 'MLP_PROJ', type: 'milestone', date: '2026-03-08', priority: 3 },
   { id: 'mlpproj-m5', title: 'Milestone 5 — Final Submission', subject: 'MLP_PROJ', type: 'milestone', date: '2026-03-15', priority: 2 },
-  { id: 'mlpproj-cutoff', title: 'Cross Cutoff Deadline', subject: 'MLP_PROJ', type: 'project', date: '2026-03-15', priority: 1, description: 'Must cross cutoff by this date' },
+  { id: 'mlpproj-cutoff', title: 'Cross Cutoff Deadline', subject: 'MLP_PROJ', type: 'project', date: '2026-03-17', priority: 1, description: 'Must cross cutoff by this date' },
   { id: 'mlpproj-viva', title: 'Complete Both Vivas', subject: 'MLP_PROJ', type: 'project', date: '2026-03-30', priority: 1, description: 'For Sep 2025 & Jan 2026 theory students' },
 ];
 
