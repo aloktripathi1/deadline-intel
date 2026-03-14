@@ -157,7 +157,7 @@ const dlGenaiProjItems: DeadlineItem[] = [
   { id: 'dlg-m3', title: 'Milestone 3 — First Neural Network', subject: 'DL_GENAI_PROJ', type: 'milestone', date: '2026-03-04', priority: 3, description: 'PyTorch basics, simple NN' },
   { id: 'dlg-m4', title: 'Milestone 4 — Sequential Models', subject: 'DL_GENAI_PROJ', type: 'milestone', date: '2026-03-11', priority: 3, description: 'RNN/LSTM/GRU' },
   { id: 'dlg-m5', title: 'Milestone 5 — Transformers', subject: 'DL_GENAI_PROJ', type: 'milestone', date: '2026-03-18', priority: 3, description: 'BERT/RoBERTa fine-tuning' },
-  { id: 'dlg-final', title: 'Final Submission & Presentation', subject: 'DL_GENAI_PROJ', type: 'project', date: '2026-03-18', priority: 2, description: 'Final Kaggle submission, report, presentation' },
+  { id: 'dlg-final', title: 'Final Submission & Presentation', subject: 'DL_GENAI_PROJ', type: 'project', date: '2026-03-30', priority: 2, description: 'Final Kaggle submission, report, presentation' },
 ];
 
 // ── MLP Project milestones ──
