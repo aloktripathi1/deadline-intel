@@ -158,6 +158,7 @@ const dlGenaiProjItems: DeadlineItem[] = [
   { id: 'dlg-m4', title: 'Milestone 4 — Sequential Models', subject: 'DL_GENAI_PROJ', type: 'milestone', date: '2026-03-11', priority: 3, description: 'RNN/LSTM/GRU' },
   { id: 'dlg-m5', title: 'Milestone 5 — Transformers', subject: 'DL_GENAI_PROJ', type: 'milestone', date: '2026-03-18', priority: 3, description: 'BERT/RoBERTa fine-tuning' },
   { id: 'dlg-final', title: 'Final Submission & Presentation', subject: 'DL_GENAI_PROJ', type: 'project', date: '2026-03-30', priority: 2, description: 'Final Kaggle submission, report, presentation' },
+  { id: 'dlgproj-viva', title: 'Complete Both Vivas', subject: 'DLGenAI_PROJ', type: 'project', date: '2026-04-15', priority: 1, description: 'For Sep 2025 & Jan 2026 theory students' }
 ];
 
 // ── MLP Project milestones ──
@@ -168,7 +169,7 @@ const mlpProjItems: DeadlineItem[] = [
   { id: 'mlpproj-m4', title: 'Milestone 4 — Ensemble & MLP', subject: 'MLP_PROJ', type: 'milestone', date: '2026-03-08', priority: 3 },
   { id: 'mlpproj-m5', title: 'Milestone 5 — Final Submission', subject: 'MLP_PROJ', type: 'milestone', date: '2026-03-15', priority: 2 },
   { id: 'mlpproj-cutoff', title: 'Cross Cutoff Deadline', subject: 'MLP_PROJ', type: 'project', date: '2026-03-17', priority: 1, description: 'Must cross cutoff by this date' },
-  { id: 'mlpproj-viva', title: 'Complete Both Vivas', subject: 'MLP_PROJ', type: 'project', date: '2026-03-30', priority: 1, description: 'For Sep 2025 & Jan 2026 theory students' },
+  { id: 'mlpproj-viva', title: 'Complete Both Vivas', subject: 'MLP_PROJ', type: 'project', date: '2026-04-10', priority: 1, description: 'For Sep 2025 & Jan 2026 theory students' },
 ];
 
 // ── MAD1 Project ──
