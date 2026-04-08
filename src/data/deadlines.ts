@@ -169,7 +169,7 @@ const mlpProjItems: DeadlineItem[] = [
   { id: 'mlpproj-m4', title: 'Milestone 4 — Ensemble & MLP', subject: 'MLP_PROJ', type: 'milestone', date: '2026-03-08', priority: 3 },
   { id: 'mlpproj-m5', title: 'Milestone 5 — Final Submission', subject: 'MLP_PROJ', type: 'milestone', date: '2026-03-15', priority: 2 },
   { id: 'mlpproj-cutoff', title: 'Cross Cutoff Deadline', subject: 'MLP_PROJ', type: 'project', date: '2026-03-17', priority: 1, description: 'Must cross cutoff by this date' },
-  { id: 'mlpproj-viva', title: 'Complete Both Vivas', subject: 'MLP_PROJ', type: 'project', date: '2026-04-10', priority: 1, description: 'For Sep 2025 & Jan 2026 theory students' },
+  { id: 'mlpproj-viva', title: 'Complete Both Vivas', subject: 'MLP_PROJ', type: 'project', date: '2026-04-15', priority: 1, description: 'For Sep 2025 & Jan 2026 theory students' },
 ];
 
 // ── MAD1 Project ──
