@@ -17,10 +17,10 @@ import { SUBJECT_LABELS, Subject, getPriorityLabel, DeadlineType, DeadlineItem, 
 const THEORY_TYPES: DeadlineType[] = ['ga', 'quiz', 'endterm', 'oppe', 'nppe', 'roe', 'bpt', 'extra_activity', 'kaggle', 'kaggle_review'];
 const PROJECT_TYPES: DeadlineType[] = ['milestone', 'form', 'project'];
 
-// Semester bounds: Jan 13 – May 10, 2026
-const TERM_START = new Date('2026-01-13');
-const TERM_END = new Date('2026-05-10');
-const NEXT_TERM_START = new Date('2026-05-13');
+// Semester bounds: Feb 06 – May 10, 2026
+const TERM_START = new Date('2026-02-06');   // Jan term start: 06 Feb
+const TERM_END = new Date('2026-05-10');    // Jan term ends: 10 May
+const NEXT_TERM_START = new Date('2026-06-12');   // Next term starts: 12 June
 
 function termProgress() {
   const now = new Date();
