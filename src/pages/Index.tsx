@@ -17,10 +17,13 @@ import { SUBJECT_LABELS, Subject, getPriorityLabel, DeadlineType, DeadlineItem, 
 const THEORY_TYPES: DeadlineType[] = ['ga', 'quiz', 'endterm', 'oppe', 'nppe', 'roe', 'bpt', 'extra_activity', 'kaggle', 'kaggle_review'];
 const PROJECT_TYPES: DeadlineType[] = ['milestone', 'form', 'project'];
 
+// Use local dates (year, monthIndex, day) to avoid timezone shifts in UI rendering.
+const localDate = (year: number, month: number, day: number) => new Date(year, month - 1, day);
+
 // Semester bounds: Feb 06 – May 10, 2026
-const TERM_START = new Date('2026-02-06');   // Jan term start: 06 Feb
-const TERM_END = new Date('2026-05-10');    // Jan term ends: 10 May
-const NEXT_TERM_START = new Date('2026-06-12');   // Next term starts: 12 June
+const TERM_START = localDate(2026, 2, 6);
+const TERM_END = localDate(2026, 5, 10);
+const NEXT_TERM_START = localDate(2026, 6, 12);
 
 function termProgress() {
   const now = new Date();
@@ -107,7 +110,7 @@ const Index = () => {
           <div className="space-y-2">
             <h1 className="text-2xl font-bold tracking-tight">Welcome to Deadline Intel</h1>
             <p className="text-muted-foreground max-w-sm">
-              Select your Jan 2026 courses to see your personalised deadline dashboard.
+              Select your Spring 2026 courses to see your personalised deadline dashboard.
             </p>
           </div>
           <button
@@ -132,7 +135,7 @@ const Index = () => {
         <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-amber/25 bg-amber/5">
           <Sparkles className="h-4 w-4 text-amber shrink-0" />
           <p className="text-sm text-foreground/80">
-            <span className="font-semibold text-amber">Jan 2026 term has ended</span>
+            <span className="font-semibold text-amber">Spring 2026 term has ended</span>
             {" — stay tuned for May 2026 term."}
           </p>
         </div>
@@ -142,7 +145,7 @@ const Index = () => {
           <CardContent className="p-6 space-y-4">
             <div className="flex items-center gap-2">
               <Trophy className="h-5 w-5 text-amber" />
-              <h2 className="text-base font-semibold">Jan 2026 · Term Summary</h2>
+              <h2 className="text-base font-semibold">Spring 2026 · Term Summary</h2>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {[
@@ -175,7 +178,7 @@ const Index = () => {
               </div>
               <div>
                 <p className="text-xs text-muted-foreground uppercase tracking-widest font-medium mb-1">Next Term</p>
-                <p className="text-base font-bold">May 2026 Term starts</p>
+                <p className="text-base font-bold">Next term starts</p>
                 <p className="text-sm text-muted-foreground">
                   {NEXT_TERM_START.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
                 </p>
@@ -226,7 +229,7 @@ const Index = () => {
       {/* Header */}
       <div className="flex items-end justify-between">
         <div className="space-y-1">
-          <p className="text-xs text-muted-foreground uppercase tracking-widest font-medium">Jan 2026 Term</p>
+          <p className="text-xs text-muted-foreground uppercase tracking-widest font-medium">Spring 2026 Term</p>
           <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
         </div>
         <div className="flex flex-col items-end gap-2">
@@ -249,7 +252,7 @@ const Index = () => {
           </div>
           <Progress value={progress} className="h-2" />
           <div className="flex justify-between mt-1.5 text-[10px] text-muted-foreground/60">
-            <span>Jan 13</span>
+            <span>Feb 06</span>
             <span>May 10</span>
           </div>
         </CardContent>
