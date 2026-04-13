@@ -110,7 +110,7 @@ const Index = () => {
           <div className="space-y-2">
             <h1 className="text-2xl font-bold tracking-tight">Welcome to Deadline Intel</h1>
             <p className="text-muted-foreground max-w-sm">
-              Select your Spring 2026 courses to see your personalised deadline dashboard.
+              Select your January 2026 courses to see your personalised deadline dashboard.
             </p>
           </div>
           <button
@@ -135,7 +135,7 @@ const Index = () => {
         <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-amber/25 bg-amber/5">
           <Sparkles className="h-4 w-4 text-amber shrink-0" />
           <p className="text-sm text-foreground/80">
-            <span className="font-semibold text-amber">Spring 2026 term has ended</span>
+            <span className="font-semibold text-amber">January 2026 term has ended</span>
             {" — stay tuned for May 2026 term."}
           </p>
         </div>
@@ -145,7 +145,7 @@ const Index = () => {
           <CardContent className="p-6 space-y-4">
             <div className="flex items-center gap-2">
               <Trophy className="h-5 w-5 text-amber" />
-              <h2 className="text-base font-semibold">Spring 2026 · Term Summary</h2>
+              <h2 className="text-base font-semibold">January 2026 · Term Summary</h2>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {[
@@ -229,7 +229,7 @@ const Index = () => {
       {/* Header */}
       <div className="flex items-end justify-between">
         <div className="space-y-1">
-          <p className="text-xs text-muted-foreground uppercase tracking-widest font-medium">Spring 2026 Term</p>
+          <p className="text-xs text-muted-foreground uppercase tracking-widest font-medium">January 2026 Term</p>
           <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
         </div>
         <div className="flex flex-col items-end gap-2">
