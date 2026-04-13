@@ -65,13 +65,14 @@ const Index = () => {
   const nextExam = (() => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
+    const DAY_MS = 1000 * 60 * 60 * 24;
     const exams = [
-      { label: 'Quiz 1', date: new Date('2026-03-15') },
-      { label: 'Quiz 2', date: new Date('2026-04-12') },
-      { label: 'End Term', date: new Date('2026-05-10') },
+      { label: 'Quiz 1', date: localDate(2026, 3, 15) },
+      { label: 'Quiz 2', date: localDate(2026, 4, 12) },
+      { label: 'End Term', date: localDate(2026, 5, 10) },
     ];
     for (const exam of exams) {
-      const diff = Math.ceil((exam.date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+      const diff = Math.floor((exam.date.getTime() - today.getTime()) / DAY_MS);
       if (diff >= 0) return { label: exam.label, days: diff };
     }
     return null;
