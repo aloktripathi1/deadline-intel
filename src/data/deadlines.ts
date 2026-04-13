@@ -144,7 +144,7 @@ const maths2Extra: DeadlineItem[] = [
 // ── DL GenAI Theory specific (NPPE only) ──
 const dlGenaiTheoryItems: DeadlineItem[] = [
   { id: 'dlg-nppe1', title: 'NPPE 1', subject: 'DL_GENAI', type: 'nppe', date: '2026-03-20', priority: 1, description: 'Mar 20 – Mar 23' },
-  { id: 'dlg-nppe2', title: 'NPPE 2', subject: 'DL_GENAI', type: 'nppe', date: '2026-04-17', priority: 1, description: 'Apr 17 – Apr 20' },
+  { id: 'dlg-nppe2', title: 'NPPE 2', subject: 'DL_GENAI', type: 'nppe', date: '2026-04-20', priority: 1, description: 'Apr 17 – Apr 20' },
 ];
 
 // ── DL GenAI Project specific (milestones, forms, final submission) ──
