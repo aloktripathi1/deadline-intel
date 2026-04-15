@@ -35,10 +35,16 @@ function getGAWeeks(level: CourseLevel) {
   return level === 'foundation' ? foundationGAWeeks : diplomaDegreeGAWeeks;
 }
 
+const excludedGAWeeksByCourse: Partial<Record<Subject, number[]>> = {
+  TDS: [9, 10, 11, 12],
+  SC: [11, 12],
+};
+
 // Generate GAs for all theory courses (not projects)
 const theoryCourses = COURSE_CATALOG.filter(c => !c.isProject);
 const gradedAssignments: DeadlineItem[] = theoryCourses.flatMap(course => {
-  const weeks = getGAWeeks(course.level);
+  const excludedWeeks = excludedGAWeeksByCourse[course.id as Subject] ?? [];
+  const weeks = getGAWeeks(course.level).filter(({ week }) => !excludedWeeks.includes(week));
   return weeks.map(({ week, date }) => ({
     id: `ga-${course.id.toLowerCase()}-w${week}`,
     title: `GA Week ${week}`,
