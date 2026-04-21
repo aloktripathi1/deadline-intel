@@ -105,7 +105,7 @@ const mlpKaggle: DeadlineItem[] = [
 const tdsItems: DeadlineItem[] = [
   { id: 'tds-roe', title: 'ROE (Remote Online Exam)', subject: 'TDS', type: 'roe', date: '2026-04-05', priority: 1, description: '45 min, open internet, 20% weightage' },
   { id: 'tds-p1', title: 'Project 1', subject: 'TDS', type: 'project', date: '2026-03-30', priority: 2, description: '20% weightage, open internet' },
-  { id: 'tds-p2', title: 'Project 2', subject: 'TDS', type: 'project', date: '2026-04-27', priority: 2, description: '20% weightage, open internet' },
+  { id: 'tds-p2', title: 'Project 2', subject: 'TDS', type: 'project', date: '2026-05-04', priority: 2, description: '20% weightage, open internet' },
 ];
 
 // ── BA Assignments ──
