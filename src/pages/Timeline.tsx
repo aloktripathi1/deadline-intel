@@ -5,15 +5,15 @@ import { SUBJECT_LABELS, Subject, COURSE_CATALOG } from "@/types/deadline";
 import { Badge } from "@/components/ui/badge";
 
 const MONTHS = [
-  { label: 'Feb', start: '2026-02-01', end: '2026-02-28' },
-  { label: 'Mar', start: '2026-03-01', end: '2026-03-31' },
-  { label: 'Apr', start: '2026-04-01', end: '2026-04-30' },
-  { label: 'May', start: '2026-05-01', end: '2026-05-31' },
+  { label: 'Jun', start: '2026-06-01', end: '2026-06-30' },
+  { label: 'Jul', start: '2026-07-01', end: '2026-07-31' },
+  { label: 'Aug', start: '2026-08-01', end: '2026-08-31' },
+  { label: 'Sep', start: '2026-09-01', end: '2026-09-30' },
 ];
 
-const TOTAL_DAYS = 120;
-const TIMELINE_START = '2026-02-01';
-const TIMELINE_END   = '2026-05-31';
+const TOTAL_DAYS = 115;
+const TIMELINE_START = '2026-06-12';
+const TIMELINE_END   = '2026-09-30';
 
 // Rotating colour palette — one per selected course
 const LANE_COLORS = [
@@ -30,6 +30,7 @@ const LANE_COLORS = [
 function dateToDayOffset(dateStr: string): number {
   const start = new Date(TIMELINE_START).getTime();
   const d = new Date(dateStr).getTime();
+  if (Number.isNaN(d)) return 0;
   return Math.max(0, Math.min(TOTAL_DAYS, Math.round((d - start) / (1000 * 60 * 60 * 24))));
 }
 
@@ -47,6 +48,7 @@ const Timeline = () => {
   const hasCustomInWindow = useMemo(
     () => customDeadlines.some(d => {
       const date = new Date(d.date);
+      if (Number.isNaN(date.getTime())) return false;
       return date >= new Date(TIMELINE_START) && date <= new Date(TIMELINE_END);
     }),
     [customDeadlines],
@@ -62,10 +64,11 @@ const Timeline = () => {
     return map;
   }, [laneCourses]);
 
-  // Restrict to the Feb–May 2026 window
+  // Restrict to the Jun–Sep 2026 window
   const timelineItems = useMemo(
     () => allItems.filter(item => {
       const d = new Date(item.date);
+      if (Number.isNaN(d.getTime())) return false;
       return d >= new Date(TIMELINE_START) && d <= new Date(TIMELINE_END);
     }),
     [allItems],
@@ -100,7 +103,7 @@ const Timeline = () => {
       <div className="space-y-8">
         <div className="space-y-1">
           <h1 className="text-3xl font-bold tracking-tight">Academic Timeline</h1>
-          <p className="text-sm text-muted-foreground">February — May 2026 · Scroll horizontally to explore</p>
+          <p className="text-sm text-muted-foreground">June — September 2026 · Scroll horizontally to explore</p>
         </div>
         <div className="glass-card rounded-xl p-12 flex flex-col items-center justify-center gap-3 text-center min-h-[220px]">
           <p className="text-lg font-semibold">No courses selected for this term</p>
@@ -119,7 +122,7 @@ const Timeline = () => {
     <div className="space-y-8">
       <div className="space-y-1">
         <h1 className="text-3xl font-bold tracking-tight">Academic Timeline</h1>
-        <p className="text-sm text-muted-foreground">February — May 2026 · Scroll horizontally to explore</p>
+        <p className="text-sm text-muted-foreground">June — September 2026 · Scroll horizontally to explore</p>
       </div>
 
       <div ref={scrollRef} className="overflow-x-auto pb-4 glass-card rounded-xl p-4">

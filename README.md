@@ -22,7 +22,7 @@ Track GAs, Quizzes, OPPEs, NPPEs, Kaggle submissions, project milestones and mor
 ## Features
 
 ### Dashboard
-- **Term progress bar** — visual indicator of how far you are through the Jan 2026 semester (Jan 13 – May 10)
+- **Term progress bar** — visual indicator of how far you are through the May 2026 semester (Jan 13 – May 10)
 - **Next critical deadline** — highlighted front and centre with a countdown
 - **Urgency zones** — deadlines grouped by red (≤ 5 days), orange (≤ 10 days), and overdue
 - **Theory / Projects filter** — toggle between theory assessments and project milestones
@@ -51,7 +51,7 @@ Track GAs, Quizzes, OPPEs, NPPEs, Kaggle submissions, project milestones and mor
 
 ---
 
-## Course Coverage (Jan 2026 Term)
+## Course Coverage (May 2026 Term)
 
 | Level | Courses |
 |---|---|

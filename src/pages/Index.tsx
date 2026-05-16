@@ -20,10 +20,10 @@ const PROJECT_TYPES: DeadlineType[] = ['milestone', 'form', 'project'];
 // Use local dates (year, monthIndex, day) to avoid timezone shifts in UI rendering.
 const localDate = (year: number, month: number, day: number) => new Date(year, month - 1, day);
 
-// Semester bounds: Feb 06 – May 10, 2026
-const TERM_START = localDate(2026, 2, 6);
-const TERM_END = localDate(2026, 5, 10);
-const NEXT_TERM_START = localDate(2026, 6, 12);
+// Semester bounds: Jun 12 – Sep 13, 2026 (May 2026 Term)
+const TERM_START = localDate(2026, 6, 12);
+const TERM_END = localDate(2026, 9, 13);
+const NEXT_TERM_START = localDate(2026, 10, 18);
 
 function termProgress() {
   const now = new Date();
@@ -67,9 +67,9 @@ const Index = () => {
     today.setHours(0, 0, 0, 0);
     const DAY_MS = 1000 * 60 * 60 * 24;
     const exams = [
-      { label: 'Quiz 1', date: localDate(2026, 3, 15) },
-      { label: 'Quiz 2', date: localDate(2026, 4, 12) },
-      { label: 'End Term', date: localDate(2026, 5, 10) },
+      { label: 'Quiz 1', date: localDate(2026, 7, 19) },
+      { label: 'Quiz 2', date: localDate(2026, 8, 16) },
+      { label: 'End Term', date: localDate(2026, 9, 13) },
     ];
     for (const exam of exams) {
       const diff = Math.floor((exam.date.getTime() - today.getTime()) / DAY_MS);
@@ -101,6 +101,7 @@ const Index = () => {
   const pendingCount = pending.length;
   const isTermOver = new Date() > TERM_END;
   const daysToNextTerm = Math.max(0, Math.ceil((NEXT_TERM_START.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)));
+  const isPreTerm = new Date() < TERM_START;
 
   // ── Empty / Not configured ──────────────────────────────────────────────────
   if (!hasConfiguredCourses) {
@@ -111,7 +112,7 @@ const Index = () => {
           <div className="space-y-2">
             <h1 className="text-2xl font-bold tracking-tight">Welcome to Deadline Intel</h1>
             <p className="text-muted-foreground max-w-sm">
-              Select your January 2026 courses to see your personalised deadline dashboard.
+              Select your May 2026 courses to see your personalised deadline dashboard.
             </p>
           </div>
           <button
@@ -136,7 +137,7 @@ const Index = () => {
         <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-amber/25 bg-amber/5">
           <Sparkles className="h-4 w-4 text-amber shrink-0" />
           <p className="text-sm text-foreground/80">
-            <span className="font-semibold text-amber">January 2026 term has ended</span>
+            <span className="font-semibold text-amber">Jan 2026 term has ended</span>
             {" — stay tuned for May 2026 term."}
           </p>
         </div>
@@ -146,7 +147,7 @@ const Index = () => {
           <CardContent className="p-6 space-y-4">
             <div className="flex items-center gap-2">
               <Trophy className="h-5 w-5 text-amber" />
-              <h2 className="text-base font-semibold">January 2026 · Term Summary</h2>
+              <h2 className="text-base font-semibold">Jan 2026 · Term Summary</h2>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {[
@@ -227,10 +228,20 @@ const Index = () => {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
 
+      {isPreTerm && (
+        <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-primary/20 bg-primary/5">
+          <CalendarCheck className="h-4 w-4 text-primary shrink-0" />
+          <p className="text-sm text-foreground/80">
+            <span className="font-semibold text-primary">May 2026 term starts soon</span>
+            {" — deadlines are already loaded, you can plan ahead."}
+          </p>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex items-end justify-between">
         <div className="space-y-1">
-          <p className="text-xs text-muted-foreground uppercase tracking-widest font-medium">January 2026 Term</p>
+          <p className="text-xs text-muted-foreground uppercase tracking-widest font-medium">May 2026 Term</p>
           <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
         </div>
         <div className="flex flex-col items-end gap-2">
@@ -253,8 +264,8 @@ const Index = () => {
           </div>
           <Progress value={progress} className="h-2" />
           <div className="flex justify-between mt-1.5 text-[10px] text-muted-foreground/60">
-            <span>Feb 06</span>
-            <span>May 10</span>
+            <span>Jun 21</span>
+            <span>Sep 13</span>
           </div>
         </CardContent>
       </Card>

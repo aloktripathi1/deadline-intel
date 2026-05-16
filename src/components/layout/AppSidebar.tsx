@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/sidebar";
 
 const items = [
-  { title: "Jan 2026 - Deadlines", url: "/", icon: LayoutDashboard },
+  { title: "May 2026 - Deadlines", url: "/", icon: LayoutDashboard },
   { title: "Timeline", url: "/timeline", icon: GanttChart },
   { title: "Subjects", url: "/subjects", icon: BookOpen },
   { title: "Settings", url: "/settings", icon: Settings },
@@ -44,7 +44,7 @@ export function AppSidebar() {
               <h1 className="text-sm font-bold tracking-tight text-foreground font-display">
                 Deadline Intel
               </h1>
-              <p className="text-[9px] text-muted-foreground font-mono uppercase tracking-[0.2em]">Jan 2026 Term</p>
+              <p className="text-[9px] text-muted-foreground font-mono uppercase tracking-[0.2em]">May 2026 Term</p>
             </div>
           </div>
         </div>

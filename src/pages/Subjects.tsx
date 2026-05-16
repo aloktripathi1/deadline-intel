@@ -35,7 +35,7 @@ const Subjects = () => {
         <div className="space-y-2">
           <h1 className="text-2xl font-bold tracking-tight">No courses selected</h1>
           <p className="text-muted-foreground max-w-sm">
-            Go to Settings to choose your Jan 2026 courses.
+            Go to Settings to choose your May 2026 courses.
           </p>
         </div>
         <button
